@@ -5,8 +5,15 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
+using Spice.DiscordClient.DependencyInjection;
+using Spice.Saffron;
 using Spice.Saffron.Areas.Identity;
+using Spice.Saffron.Configuration.Options;
 using Spice.Saffron.Data;
+using Spice.Saffron.Factories;
+using Spice.Saffron.Services;
+using System.Configuration;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,10 +22,26 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDefaultIdentity<IdentityUser>(
-        options => options.SignIn. = true)
+        options =>
+        {
+
+        })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Add services to the container.
+builder.Services.Configure<DiscordBotSettings>(builder.Configuration.GetSection("DiscordBot"));
+builder.Services.Configure<DiscordGuildSettings>(builder.Configuration.GetSection("DiscordGuild"));
+
+builder.Services.AddDiscordService(options =>
+{
+    var discordbotConfig = builder.Configuration.GetSection("DiscordBot").Get<DiscordBotSettings>();
+
+    options.Version = 9;
+    options.BotToken = discordbotConfig.BotToken;
+});
+
+builder.Services.AddSingleton<IDiscordClaimsService, DiscordClaimsService>();
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>,AdditionalUserClaimsPrincipalFactory>();
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
@@ -26,9 +49,19 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddAuthentication()
     .AddDiscord(options =>
     {
-        options.ClientId = "860154950344376342";
-        options.ClientSecret = "oX-Ce-dM28Q7eToN2TgSHGS0UZLiZTww";
+        var discordOAuthConfig = builder.Configuration.GetSection("DiscordOAuth").Get<DiscordOAuthSettings>();
+
+        options.ClientId = discordOAuthConfig.ClientId;
+        options.ClientSecret = discordOAuthConfig.ClientSecret;
+        //options.SaveTokens = true;
     });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ManagementOnly", policy => policy.RequireRole("Officer", "Leader"));
+    options.AddPolicy("MemberOnly", policy => policy.RequireRole("Member", "Coconut Farmer", "Founder", "Officer", "Leader"));
+    options.AddPolicy("CommunityOnly", policy => policy.RequireRole("Member", "Coconut Farmer", "Founder", "Officer", "Leader", "Company Friend"));
+});
 
 var app = builder.Build();
 

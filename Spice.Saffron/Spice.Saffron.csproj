@@ -22,4 +22,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Spice.Discord\Spice.DiscordClient.csproj" />
+  </ItemGroup>
+
 </Project>

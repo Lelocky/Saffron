@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-Spice.Saffron-DAB85278-E0F3-4A26-8E63-AE205A775A3A</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>

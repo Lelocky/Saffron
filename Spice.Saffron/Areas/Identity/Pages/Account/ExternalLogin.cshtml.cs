@@ -17,21 +17,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Spice.Saffron.Data;
 
 namespace Spice.Saffron.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUserStore<IdentityUser> _userStore;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserStore<ApplicationUser> _userStore;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
-            SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
-            IUserStore<IdentityUser> userStore,
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            IUserStore<ApplicationUser> userStore,
             ILogger<ExternalLoginModel> logger)
         {
             _signInManager = signInManager;
@@ -111,6 +112,23 @@ namespace Spice.Saffron.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+
+                var user = await _userManager.FindByNameAsync(info.ProviderKey);
+
+                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Name))
+                {
+                    var nickNameClaim = info.Principal.FindFirst(ClaimTypes.Name);
+                    user.Nickname = nickNameClaim.Value;
+                }
+
+                if (info.Principal.HasClaim(c => c.Type == "urn:discord:avatar:hash"))
+                {
+                    var profileImageClaim = info.Principal.FindFirst("urn:discord:avatar:hash");
+                    user.ProfileImage = profileImageClaim.Value;
+                }
+
+                await _userManager.UpdateAsync(user);
+
                 return LocalRedirect(returnUrl);
             }
             if (result.IsLockedOut)
@@ -119,17 +137,9 @@ namespace Spice.Saffron.Areas.Identity.Pages.Account
             }
             else
             {
-                // If the user does not have an account, then ask the user to create an account.
                 ReturnUrl = returnUrl;
                 ProviderDisplayName = info.ProviderDisplayName;
-                //if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
-                //{
-                //    Input = new InputModel
-                //    {
-                //        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                //    };
-                //}
-
+                
                 var registerSuccess = await RegisterUserAsync();
                 if (registerSuccess)
                 {
@@ -155,6 +165,18 @@ namespace Spice.Saffron.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, info.ProviderKey, CancellationToken.None);
 
+                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Name))
+                {
+                    var nickNameClaim = info.Principal.FindFirst(ClaimTypes.Name);
+                    user.Nickname = nickNameClaim.Value;
+                }
+
+                if (info.Principal.HasClaim(c => c.Type == "urn:discord:avatar:hash"))
+                {
+                    var profileImageClaim = info.Principal.FindFirst("urn:discord:avatar:hash");
+                    user.ProfileImage = profileImageClaim.Value;
+                }
+
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -178,16 +200,16 @@ namespace Spice.Saffron.Areas.Identity.Pages.Account
             return false;
         }
 
-        private IdentityUser CreateUser()
+        private ApplicationUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<ApplicationUser>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
-                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the external login page in /Areas/Identity/Pages/Account/ExternalLogin.cshtml");
             }
         }

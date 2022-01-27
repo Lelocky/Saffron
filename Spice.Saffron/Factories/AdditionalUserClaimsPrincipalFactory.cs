@@ -1,27 +1,32 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Spice.Saffron.Data;
+using Spice.Saffron.Extensions;
 using Spice.Saffron.Services;
 using System.Security.Claims;
 
 namespace Spice.Saffron.Factories
 {
-	public class AdditionalUserClaimsPrincipalFactory: UserClaimsPrincipalFactory<IdentityUser>
+	public class AdditionalUserClaimsPrincipalFactory: UserClaimsPrincipalFactory<ApplicationUser>
 	{
 		private readonly IDiscordClaimsService _claimsService;
+		private readonly UserManager<ApplicationUser> _userManager;
 
 		public AdditionalUserClaimsPrincipalFactory(
-			UserManager<IdentityUser> userManager,
+			UserManager<ApplicationUser> userManager,
 			IOptions<IdentityOptions> optionsAccessor,
 			IDiscordClaimsService claimsService)
 			: base(userManager, optionsAccessor)
 		{ 
 			_claimsService = claimsService;
+			_userManager = userManager;
 		}
 
-		public async override Task<ClaimsPrincipal> CreateAsync(IdentityUser user)
+		public async override Task<ClaimsPrincipal> CreateAsync(ApplicationUser user)
 		{			
 			var userId = user.UserName;
-			var customClaims = await _claimsService.GetDiscordRolesAsClaimsAsync(userId);
+			var dbUser = await _userManager.FindByNameAsync(userId);
+			var roleClaims = await _claimsService.GetDiscordRolesAsClaimsAsync(userId);
 
 			var principal = await base.CreateAsync(user);
             
@@ -37,7 +42,10 @@ namespace Spice.Saffron.Factories
 				throw new Exception("Identity is null");
 			}
 
-			identity.AddClaims(customClaims);
+			identity.AddClaims(roleClaims);
+
+			identity.AddClaim(new Claim(SaffronClaimTypes.ProfileImage, dbUser.ProfileImage));
+			identity.AddClaim(new Claim(SaffronClaimTypes.Nickname, dbUser.Nickname));
 
 			return principal;
 		}

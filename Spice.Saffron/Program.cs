@@ -63,6 +63,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CommunityOnly", policy => policy.RequireRole("Member", "Coconut Farmer", "Founder", "Officer", "Leader", "Company Friend"));
 });
 
+builder.Services.AddAntDesign();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

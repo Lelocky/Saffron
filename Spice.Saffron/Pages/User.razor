@@ -1,0 +1,134 @@
+﻿@page "/user"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+
+<PageTitle>@_title</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        <div class="site-page-header-ghost-wrapper">
+            <PageHeader Ghost="false">
+                <PageHeaderTitle>@_title</PageHeaderTitle>
+                <PageHeaderSubtitle>All the things we know about you!</PageHeaderSubtitle>
+                <PageHeaderExtra>
+                    <Button Type="@ButtonType.Primary"
+                            Icon="@IconType.Outline.Poweroff"
+                            OnClick="RedirectToLogout">
+                        Logout
+                    </Button>
+                </PageHeaderExtra>
+                <PageHeaderContent>
+                    <Descriptions Size="small" Column="3">
+                        <DescriptionsItem Title="Nickname" Span="1">Nickname</DescriptionsItem>
+                        <DescriptionsItem Title="DiscordId" Span="1"><a>45454546565</a></DescriptionsItem>
+                        <DescriptionsItem Title="ProfileImage" Span="1">bfyuiwer09hkdsf</DescriptionsItem>
+                        <DescriptionsItem Title="Discriminator" Span="1">4324</DescriptionsItem>
+                        <DescriptionsItem Title="Birthdate" Span="1">2017-01-10</DescriptionsItem>
+                    </Descriptions>
+                    <p class="note">This data is stored in our database.</p>
+                </PageHeaderContent>
+            </PageHeader>
+
+        </div>
+        <div>
+            <Divider Orientation="left">Roles</Divider>
+            <Row>
+                <AntDesign.Col Span="12">
+                    <p>Your roles on our Discord Server. Only the useful ones ofcourse.</p>
+                    @if (_claims.Count() > 0)
+                    {
+                        <ul>
+                            @foreach (var claim in _claims.Where(x => x.Type.Equals(ClaimTypes.Role)))
+                            {
+                                <li>@claim.Value</li>
+                            }
+                        </ul>
+                    }
+                </AntDesign.Col>
+            </Row>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <a href="Identity/Account/Login">Log with your discord account</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+<AuthorizeView Policy="ManagementOnly">
+    <Authorized>
+        <div>
+            <Divider Orientation="left">Claims</Divider>
+            <Row>
+                <AntDesign.Col Span="12">
+                    @if (_claims.Count() > 0)
+                    {
+                        <ul>
+                            @foreach (var claim in _claims)
+                            {
+                                <li>@claim.Type: @claim.Value</li>
+                            }
+                        </ul>
+                    }
+                </AntDesign.Col>
+            </Row>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView>
+    <Authorized>
+    <div>
+        <Divider Orientation="left" Class=".danger-zone">Danger Zone</Divider>
+        <Row>
+            <AntDesign.Col Span="6">
+                <p>Don't want us to store your data anymore? Click the "Delete account" button below and we will yeet it.</p>
+                <Button Danger Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete">Delete account</Button>
+            </AntDesign.Col>
+        </Row>
+    </div>
+</Authorized>
+</AuthorizeView>
+
+<style>
+    .gutter-box {
+        padding: 8px 0;
+        background: #00a0e9;
+    }
+
+    .note {
+        font-size: 10px;
+    }
+</style>
+
+
+@code {
+    private string _title = "User";
+    string style = "background: #0092ff; padding: 8px 0;";
+    Dictionary<string, int> gutter = new()
+        {
+            ["xs"] = 8,
+            ["sm"] = 16,
+            ["md"] = 24,
+            ["lg"] = 32,
+            ["xl"] = 48,
+            ["xxl"] = 64
+        };
+    private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _title = user.GetNickname();
+            _claims = user.Claims;
+        }
+    }
+
+    private async Task RedirectToLogout()
+    {
+        Navigation.NavigateTo("/Identity/Account/Logout", true);
+    }
+}

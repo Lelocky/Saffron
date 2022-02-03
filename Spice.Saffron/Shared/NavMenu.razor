@@ -1,44 +1,28 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Spice.Saffron</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="claims">
-                <span class="oi oi-plus" aria-hidden="true"></span> Claims
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
-         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="managebot">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Manage Bot
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
+﻿@using System.Security.Claims
+<Menu Theme="MenuTheme.Dark" DefaultSelectedKeys=@(new[]{"1"}) Mode="MenuMode.Inline">
+    <MenuItem Key="1">
+        <NavLink class="nav-link" href="/">
+            <Icon Type="home" Theme="outline" />
+            <span>Home</span>
+        </NavLink>
+    </MenuItem>
+    <MenuItem Key="2">
+        <NavLink class="nav-link" href="user">
+            <Icon Type="user" Theme="outline" />
+            <AuthorizeView>
+                <Authorized>
+                    <span>@context.User.GetNickname()</span>
+                </Authorized>
+                <NotAuthorized>
+                    <span>Login</span>
+                </NotAuthorized>
+            </AuthorizeView>
+        </NavLink>
+    </MenuItem>
+    <MenuItem Key="3">
+        <NavLink class="nav-link" href="managebot">
+            <Icon Type="desktop" Theme="outline" />
+            <span>Manage Bot</span>
+        </NavLink>
+    </MenuItem>
+</Menu>

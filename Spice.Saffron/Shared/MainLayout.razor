@@ -1,19 +1,58 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>Spice.Saffron</PageTitle>
+<PageTitle>Saffron</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4 auth">
-            <LoginDisplay />
+<Layout Style="min-height: 100vh; ">
+    <Sider Collapsible Collapsed=@collapsed OnCollapse=@onCollapse>
+        <div class="logo">
+            <p>Saffron</p>
         </div>
+        <NavMenu />
+    </Sider>
+    <Layout Class="site-layout">
+        <Header Class="header-background" Style=" padding: 0 ;"></Header>
+        <Content Style="margin:0 16px;">
+            <div class="site-layout-background" style="padding: 24px; min-height: 360px">
+                @Body
+            </div>
+        </Content>
+        <Footer Style="text-align:center ">Saffron ©2022</Footer>
+    </Layout>
+</Layout>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+
+@code {
+    bool collapsed;
+
+    void onCollapse(bool collapsed)
+    {
+        Console.WriteLine(collapsed);
+        this.collapsed = collapsed;
+    }
+}
+
+
+<style>
+    #components-layout-demo-side .logo {
+        height: 32px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 16px;
+    }
+
+    .site-layout .site-layout-background {
+        background: #fff;
+    }
+
+    .header-background {
+          background: #001529;
+    }
+
+    .logo
+    {
+        min-height:60px;
+    }
+
+    .logo p {
+        color: #ffffff;
+    }
+</style>

@@ -4,7 +4,7 @@
 @attribute [IgnoreAntiforgeryToken]
 @inject SignInManager<ApplicationUser> SignInManager
 @functions {
-    public async Task<IActionResult> OnPost()
+    public async Task<IActionResult> OnGet()
     {
         if (SignInManager.IsSignedIn(User))
         {

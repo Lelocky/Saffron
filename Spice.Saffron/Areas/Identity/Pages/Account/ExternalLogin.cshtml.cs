@@ -82,7 +82,15 @@ namespace Spice.Saffron.Areas.Identity.Pages.Account
             public string Email { get; set; }
         }
         
-        public IActionResult OnGet() => RedirectToPage("./Login");
+        public IActionResult OnGet(string returnUrl = null)
+        {
+            var providerName = "Discord";
+
+            // Request a redirect to the external login provider.
+            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(providerName, redirectUrl);
+            return new ChallengeResult(providerName, properties);
+        }
 
         public IActionResult OnPost(string provider, string returnUrl = null)
         {

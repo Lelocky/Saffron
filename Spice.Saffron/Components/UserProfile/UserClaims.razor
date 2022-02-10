@@ -1,0 +1,33 @@
+﻿@using System.Security.Claims
+@namespace Spice.Saffron.Components
+<div>
+    <Divider Orientation="left">Claims</Divider>
+
+    <Row>
+        <Col Span="12">
+        @if (Claims != null)
+            {
+                @if (Claims.Count() > 0)
+                {
+                <ul>
+                        @foreach (var claim in Claims)
+                        {
+                        <li>@claim.Type: @claim.Value</li>
+                        }
+                </ul>
+                }
+            }
+            else
+            {
+            <Skeleton Active="true"></Skeleton>
+            }
+        </Col>
+    </Row>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public IEnumerable<Claim> Claims { get; set; }
+}

@@ -44,9 +44,13 @@ namespace Spice.Saffron.Factories
 
 			identity.AddClaims(roleClaims);
 
-			identity.AddClaim(new Claim(SaffronClaimTypes.ProfileImage, dbUser.ProfileImage));
 			identity.AddClaim(new Claim(SaffronClaimTypes.Nickname, dbUser.Nickname));
 
+			if (dbUser.ProfileImage != null)
+            {
+				identity.AddClaim(new Claim(SaffronClaimTypes.ProfileImage, dbUser.ProfileImage));
+			}
+			
 			return principal;
 		}
 	}

@@ -1,0 +1,48 @@
+﻿@page "/users"
+@attribute [Authorize(Policy = "ManagementOnly")]
+@inject IUserService UserService
+
+<Divider Orientation="left">User Statistics</Divider>
+<Row Gutter="16">
+    <Col Span="12">
+    <Statistic Title="Total Users" Value="@_totalUsers" />
+    </Col>
+</Row>
+
+<Divider Orientation="left">Users</Divider>
+
+        @if (_users != null)
+{
+    <Table TItem="UserViewModel" DataSource="@_users">
+        <Column @bind-Field="@context.NickName"></Column>
+        <Column @bind-Field="@context.DateOfBirth"></Column>
+        <ActionColumn Title="Action">
+            <Space Size=@("middle")>
+                <SpaceItem>
+                    <a>Delete</a>
+                </SpaceItem>
+            </Space>
+        </ActionColumn>
+    </Table>
+}
+else
+{
+    <Skeleton Active="true"></Skeleton>
+}
+
+
+@code {
+    private List<UserViewModel> _users;
+    private int _totalUsers = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _users = await UserService.GetUsersAsync();
+            _totalUsers = _users.Count();
+            StateHasChanged();
+        }
+    }
+}
+

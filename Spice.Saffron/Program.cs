@@ -43,6 +43,7 @@ builder.Services.AddDiscordService(options =>
 
 builder.Services.AddSingleton<IDiscordClaimsService, DiscordClaimsService>();
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>,AdditionalUserClaimsPrincipalFactory>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();

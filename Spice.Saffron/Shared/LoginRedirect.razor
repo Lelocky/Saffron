@@ -1,9 +1,14 @@
 ﻿@attribute [AllowAnonymous]
 @inject NavigationManager NavigationManager
 
+<Result Icon="" Status="info" Title="Redirect" SubTitle="You're being redirected to the login page." />
+
 @code {
-    protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
-        NavigationManager.NavigateTo("Identity/Account/Login", true);
+        if (firstRender)
+        {
+            NavigationManager.NavigateTo("Identity/Account/Login", true);
+        }
     }
 }

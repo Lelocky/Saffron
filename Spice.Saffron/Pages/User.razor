@@ -1,92 +1,34 @@
 ﻿@page "/user"
 @using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
+@inject IUserService UserService
 
 <PageTitle>@_title</PageTitle>
 <AuthorizeView>
     <Authorized>
-        <div class="site-page-header-ghost-wrapper">
-            <PageHeader Ghost="false">
-                <PageHeaderTitle>@_title</PageHeaderTitle>
-                <PageHeaderSubtitle>All the things we know about you!</PageHeaderSubtitle>
-                <PageHeaderExtra>
-                    <Button Type="@ButtonType.Primary"
-                            Icon="@IconType.Outline.Poweroff"
-                            OnClick="RedirectToLogout">
-                        Logout
-                    </Button>
-                </PageHeaderExtra>
-                <PageHeaderContent>
-                    <Descriptions Size="small" Column="3">
-                        <DescriptionsItem Title="Nickname" Span="1">Nickname</DescriptionsItem>
-                        <DescriptionsItem Title="DiscordId" Span="1"><a>45454546565</a></DescriptionsItem>
-                        <DescriptionsItem Title="ProfileImage" Span="1">bfyuiwer09hkdsf</DescriptionsItem>
-                        <DescriptionsItem Title="Discriminator" Span="1">4324</DescriptionsItem>
-                        <DescriptionsItem Title="Birthdate" Span="1">2017-01-10</DescriptionsItem>
-                    </Descriptions>
-                    <p class="note">This data is stored in our database.</p>
-                </PageHeaderContent>
-            </PageHeader>
-
-        </div>
-        <div>
-            <Divider Orientation="left">Roles</Divider>
-            <Row>
-                <AntDesign.Col Span="12">
-                    <p>Your roles on our Discord Server. Only the useful ones ofcourse.</p>
-                    @if (_claims.Count() > 0)
-                    {
-                        <ul>
-                            @foreach (var claim in _claims.Where(x => x.Type.Equals(ClaimTypes.Role)))
-                            {
-                                <li>@claim.Value</li>
-                            }
-                        </ul>
-                    }
-                </AntDesign.Col>
-            </Row>
-        </div>
+        <UserInformation OnRedirectToEditProfile=@RedirectToEditProfile
+                         OnRedirectToLogout=@RedirectToLogout
+                         User=@_user
+                         Claims=@_claims.Where(x => x.Type.Equals(ClaimTypes.Role))>
+        </UserInformation>
     </Authorized>
     <NotAuthorized>
-       <LoginRedirect/>
+        <LoginRedirect />
     </NotAuthorized>
 </AuthorizeView>
 
 <AuthorizeView Policy="ManagementOnly">
     <Authorized>
-        <div>
-            <Divider Orientation="left">Claims</Divider>
-            <Row>
-                <AntDesign.Col Span="12">
-                    @if (_claims.Count() > 0)
-                    {
-                        <ul>
-                            @foreach (var claim in _claims)
-                            {
-                                <li>@claim.Type: @claim.Value</li>
-                            }
-                        </ul>
-                    }
-                </AntDesign.Col>
-            </Row>
-        </div>
+        <UserClaims Claims=@_claims>
+        </UserClaims>
     </Authorized>
 </AuthorizeView>
 
 <AuthorizeView>
     <Authorized>
-    <div>
-        <Divider Orientation="left" Class=".danger-zone">Danger Zone</Divider>
-        <Row>
-            <AntDesign.Col Span="6">
-                <p>Don't want us to store your data anymore? Click the "Delete account" button below and we will yeet it.</p>
-                <Button Danger Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete">Delete account</Button>
-            </AntDesign.Col>
-        </Row>
-    </div>
-</Authorized>
+       <DeleteAccount OnDeleteAccount=@DeleteAccount></DeleteAccount>
+    </Authorized>
 </AuthorizeView>
 
 <style>
@@ -103,17 +45,9 @@
 
 @code {
     private string _title = "User";
-    string style = "background: #0092ff; padding: 8px 0;";
-    Dictionary<string, int> gutter = new()
-        {
-            ["xs"] = 8,
-            ["sm"] = 16,
-            ["md"] = 24,
-            ["lg"] = 32,
-            ["xl"] = 48,
-            ["xxl"] = 64
-        };
     private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+    private UserViewModel _user;
+    private string _userName;
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,11 +58,44 @@
         {
             _title = user.GetNickname();
             _claims = user.Claims;
+            _userName = user.Identity.Name;
         }
     }
 
-    private async Task RedirectToLogout()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            if (authState.User.Identity.IsAuthenticated)
+            {
+                _user = await UserService.GetUserAsync(_userName);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void RedirectToEditProfile()
+    {
+        Navigation.NavigateTo("/EditProfile");
+    }
+
+    private void RedirectToLogout()
     {
         Navigation.NavigateTo("/Identity/Account/Logout", true);
+    }
+
+    private async Task DeleteAccount()
+    {
+        var success = await UserService.DeleteUserDataAsync(_userName);
+        if (success)
+        {
+            Navigation.NavigateTo("/Identity/Account/Logout", true);
+        }
+        else
+        {
+            Navigation.NavigateTo("/Error", true);
+        }
     }
 }

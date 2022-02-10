@@ -1,0 +1,12 @@
+﻿@page "/loggedout"
+@inject NavigationManager NavigationManager
+<AuthorizeView>
+    <Authorized>
+        <Result Icon="smile-outline" Status="info" Title="Logged in!" SubTitle="You're still authenticated with the application.">
+        </Result>
+    </Authorized>
+    <NotAuthorized>
+        <Result Icon="smile-outline" Status="info" Title="Logged out!" SubTitle="You're no longer authenticated with the application.">
+        </Result>
+    </NotAuthorized>
+</AuthorizeView>

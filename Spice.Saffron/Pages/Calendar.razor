@@ -1,0 +1,85 @@
+﻿@page "/calendar"
+@inject ICalendarService CalendarService
+@attribute [Authorize(Policy = "CommunityOnly")]
+
+<Divider Orientation="left">Calendar</Divider>
+<AntDesign.Calendar DateCellRender="DateCellRender" />
+
+
+@code
+{
+    private CalendarViewModel _birthdays { get; set; }
+
+    class ListData
+    {
+        public string type;
+        public string content;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _birthdays = await CalendarService.GetBirthdays();
+        }
+    }
+
+    private List<ListData> GetListData(DateTime value)
+    {
+        List<ListData> listData = new List<ListData>();
+
+        if (_birthdays != null)
+        {
+            //Fix leap year shit!
+            var today = _birthdays.Items.Where(x => x.OccurAt.DayOfYear.Equals(value.DayOfYear)).ToList();
+
+            foreach(var birthdayItem in today)
+            {
+                listData.Add(new ListData { type = "warning", content = birthdayItem.Name });
+            }
+        }
+     
+        return listData;
+    }
+
+    private RenderFragment DateCellRender(DateTime value)
+    {
+        var listData = GetListData(value);
+        return
+    @<Template>
+        <ul class="events">
+            @foreach (var data in listData)
+                {
+                    <li key="@data.content">
+                        <Badge Status="@data.type" Text="@data.content" />
+                    </li>
+                }
+            </ul>
+        </Template>;
+    }
+}
+
+<style>
+    .events {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        .events .ant-badge-status {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+            text-overflow: ellipsis;
+            font-size: 12px;
+        }
+
+    .notes-month {
+        text-align: center;
+        font-size: 28px;
+    }
+
+        .notes-month section {
+            font-size: 28px;
+        }
+</style>

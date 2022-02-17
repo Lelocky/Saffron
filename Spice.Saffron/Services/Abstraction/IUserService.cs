@@ -7,5 +7,6 @@ namespace Spice.Saffron.Services
         Task<UserViewModel> GetUserAsync(string userName);
         Task<bool> DeleteUserDataAsync(string userName);
         Task<List<UserViewModel>> GetUsersAsync();
+        Task<bool> UpdateUserDateOfBirth(string userName, DateTime dateOfBirth);
     }
 }

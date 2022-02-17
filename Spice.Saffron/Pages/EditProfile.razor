@@ -1,0 +1,88 @@
+﻿@page "/editprofile"
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@inject IUserService UserService
+@inject MessageService _message
+@attribute [Authorize]
+
+<PageTitle>@_title</PageTitle>
+<Divider Orientation="left">Edit Profile</Divider>
+
+<Form Layout="@FormLayout.Horizontal"
+      Model="@model"
+      WrapperColSpan="8"
+      OnFinish="OnFinish"
+      OnFinishFailed="OnFinishFailed">
+    <FormItem Label="Birthday">
+        <DatePicker @bind-Value="@context.DateOfBirth" />
+          <p class="note">Your birth year will be changed to 1972 when saved. Your age will not be stored.</p>
+    </FormItem>
+    <FormItem>
+        <Button Icon="@IconType.Outline.Save" Type="@ButtonType.Primary" HtmlType="submit">
+            Save
+        </Button>
+    </FormItem>
+</Form>
+
+<style>
+    .note {
+        font-size: 10px;
+    }
+</style>
+
+@code {
+    private string _title = "Profile";
+    private string _userName { get; set; }
+
+    public class Model
+    {
+        public DateTime DateOfBirth { get; set; } = DateTime.Now;
+    }
+
+    private Model model = new Model();
+
+    private async Task OnFinish(EditContext editContext)
+    {
+        _= _message.Loading("Saving profile");
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var result = await UserService.UpdateUserDateOfBirth(authState.User.Identity.Name, model.DateOfBirth);
+
+        _message.Destroy();
+
+        if (result)
+        {
+            _= _message.Success("Profile saved");
+            Navigation.NavigateTo("/profile");
+        }
+        else
+        {
+            _= _message.Error("Saving profile failed");
+        }
+
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            if (authState.User.Identity.IsAuthenticated)
+            {
+                var user = await UserService.GetUserAsync(authState.User.Identity.Name);
+                if (user.DateOfBirth != null)
+                {
+                    model.DateOfBirth = (DateTime)user.DateOfBirth;
+                }
+
+                StateHasChanged();
+            }
+        }
+    }
+}

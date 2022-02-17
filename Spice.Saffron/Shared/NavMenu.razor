@@ -7,7 +7,7 @@
         </NavLink>
     </MenuItem>
     <MenuItem Key="2">
-        <NavLink class="nav-link" href="user">
+        <NavLink class="nav-link" href="profile">
             <Icon Type="user" Theme="outline" />
             <AuthorizeView>
                 <Authorized>
@@ -19,16 +19,24 @@
             </AuthorizeView>
         </NavLink>
     </MenuItem>
-     <MenuItem Key="3">
-        <NavLink class="nav-link" href="users">
-            <Icon Type="usergroup-delete" Theme="outline" />
-            <span>Users</span>
-        </NavLink>
-    </MenuItem>
-    <MenuItem Key="4">
-        <NavLink class="nav-link" href="managebot">
-            <Icon Type="desktop" Theme="outline" />
-            <span>Manage Bot</span>
-        </NavLink>
-    </MenuItem>
+    <AuthorizeView>
+        <Authorized>
+            <MenuItem Key="3">
+                <NavLink class="nav-link" href="Calendar">
+                    <Icon Type="schedule" Theme="outline" />
+                    <span>Calendar</span>
+                </NavLink>
+            </MenuItem>
+        </Authorized>
+    </AuthorizeView>
+    <AuthorizeView Policy="ManagementOnly">
+        <Authorized>
+            <MenuItem Key="4">
+                <NavLink class="nav-link" href="users">
+                    <Icon Type="usergroup-delete" Theme="outline" />
+                    <span>Users</span>
+                </NavLink>
+            </MenuItem>
+        </Authorized>
+    </AuthorizeView>
 </Menu>

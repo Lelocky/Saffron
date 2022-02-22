@@ -30,10 +30,14 @@
 
         if (_birthdays != null)
         {
-            //Fix leap year shit!
-            var today = _birthdays.Items.Where(x => x.OccurAt.DayOfYear.Equals(value.DayOfYear)).ToList();
+            var birthDaysOnDate = _birthdays.Items.Where(x => x.OccurAt.Day.Equals(value.Day) && x.OccurAt.Month.Equals(value.Month)).ToList();
 
-            foreach(var birthdayItem in today)
+            if(value.Month.Equals(2) && value.Day.Equals(28) && !value.IsLeapYear())
+            {
+                birthDaysOnDate.AddRange(_birthdays.Items.Where(x => x.OccurAt.Day.Equals(29) && x.OccurAt.Month.Equals(2)).ToList());
+            }
+
+            foreach(var birthdayItem in birthDaysOnDate)
             {
                 listData.Add(new ListData { type = "warning", content = birthdayItem.Name });
             }

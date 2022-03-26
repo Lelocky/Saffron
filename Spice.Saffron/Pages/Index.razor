@@ -1,9 +1,44 @@
 ﻿@page "/"
+@inject NavigationManager NavigationManager
+<div>
+    <Row>
+        <Col Span="12" Offset="6">
+        <div class="homepage-welcome">
+            <h1>Welcome to Saffron!</h1>
+            <div class=homepage-welcome-banner>
+                <img src="https://via.placeholder.com/700x200.png?text=Nice+FC+Picture" />
+            </div>
+        </div>
+        </Col>
+    </Row>
+    <AuthorizeView>
+        <Authorized>
+            <Row>
+                <Col Span="12" Offset="6">
+                <p>Lol noobs</p>
+                </Col>
+            </Row>
+        </Authorized>
+        <NotAuthorized>
+            <Row>
+                <Col Span="12" Offset="6">
+                <div class="homepage-login">
+                    <Button Type="@ButtonType.Primary"
+                            Icon="@IconType.Outline.User"
+                            OnClick="OnRedirectToLogin">
+                        Login with Discord
+                    </Button>
+                </div>
+                </Col>
+            </Row>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
 
-<PageTitle>Index</PageTitle>
+@code {
+    private void OnRedirectToLogin()
+    {
+        NavigationManager.NavigateTo("Identity/Account/Login", true);
+    }
+}
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />

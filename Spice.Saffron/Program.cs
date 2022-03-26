@@ -98,11 +98,23 @@ app.UseCookiePolicy(new CookiePolicyOptions
     Secure = CookieSecurePolicy.Always
 });
 
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    if (context.Database.GetPendingMigrations().Any())
+    {
+        context.Database.Migrate();
+    }
+}
 
 app.Run();

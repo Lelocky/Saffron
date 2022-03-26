@@ -38,3 +38,24 @@
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.homepage-welcome h1 {
+    font-size:45px;
+    text-align:center;
+}
+
+.homepage-welcome h2 {
+    font-size: 20px;
+    margin-top: 10px;
+    text-align:center;
+}
+
+.homepage-welcome-banner{
+    text-align:center;
+}
+
+.homepage-login
+{
+    margin-top:15px;
+    text-align:center;
+}

@@ -2,11 +2,11 @@
 @inject NavigationManager NavigationManager
 <AuthorizeView>
     <Authorized>
-        <Result Icon="smile-outline" Status="info" Title="Logged in!" SubTitle="You're still authenticated with the application.">
-        </Result>
+        <h2>You're not logged out</h2>
+        <p>What are you doing here?</p>
     </Authorized>
     <NotAuthorized>
-        <Result Icon="smile-outline" Status="info" Title="Logged out!" SubTitle="You're no longer authenticated with the application.">
-        </Result>
+      <h2>You're logged out</h2>
+      <p>See you later!</p>
     </NotAuthorized>
 </AuthorizeView>

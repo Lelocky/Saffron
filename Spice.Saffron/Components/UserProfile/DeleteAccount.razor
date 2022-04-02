@@ -1,38 +1,36 @@
 ﻿@namespace Spice.Saffron.Components
-<div>
-    <Divider Orientation="left" Class=".danger-zone">Danger Zone</Divider>
-    <Row>
-        <Col Span="6">
-        <p>Don't want us to store your data anymore? Click the "Delete account" button below and we will yeet it.</p>
-        <Button Danger Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="ShowDeleteAccountConfirmation">Delete account</Button>
-        </Col>
-    </Row>
-</div>
+
+<h3 class=text-danger>Danger zone!</h3>
+<p>Don't want us to store your data anymore? Click the "Delete account" button below and we will yeet it.</p>
+<BSButton Color="BSColor.Danger" Target="modal1">Delete account</BSButton>
 
 
-<Modal Title="Delete data"
-       Visible="@_visible"
-       OnOk="@HandleOk"
-       ConfirmLoading="@_confirmLoading">
-    <p>@_modalText</p>
-</Modal>
+<BSModal DataId="modal1">
+    <Header>Delete account</Header>
+    <Content>@_modalText</Content>
+    <Footer Context="modal">
+        <BSButton MarginStart="Margins.Auto" Color="BSColor.Secondary" @onclick="modal.HideAsync">Close</BSButton>
+        <BSButton Color="BSColor.Primary" OnClick="DeleteData">Delete account</BSButton>
+    </Footer>
+</BSModal>
+
 
 
 @code {
     [Parameter]
     public EventCallback OnDeleteAccount { get; set; }
 
-    bool _visible = false;
-    bool _confirmLoading = false;
-    string _modalText = "Are you sure you want to delete your data?";
+    private bool _showModal = false;
+    private bool _confirmLoading = false;
+    private string _modalText = "Are you sure you want to delete your account? This will delete all your data.";
 
     private void ShowDeleteAccountConfirmation()
     {
-        _visible = true;
+        _showModal = true;
     }
 
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task DeleteData(MouseEventArgs e)
     {
         _modalText = "Yeeting data...";
         _confirmLoading = true;
@@ -42,7 +40,7 @@
 
     private void HandleCancel(MouseEventArgs e)
     {
-        _visible = false;
+        _showModal = false;
     }
 }
 

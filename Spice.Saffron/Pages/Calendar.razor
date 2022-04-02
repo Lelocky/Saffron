@@ -2,13 +2,40 @@
 @inject ICalendarService CalendarService
 @attribute [Authorize(Policy = "CommunityOnly")]
 
-<Divider Orientation="left">Calendar</Divider>
-<AntDesign.Calendar DateCellRender="DateCellRender" />
+<PageTitle>Calendar</PageTitle>
+<div class=page-header>
+    <h2>Calendar</h2>
+</div>
+<div class="calendar-wrapper">
+    <BSAlert Color="BSColor.Primary">There will be a nice calendar here. Dumping data until then</BSAlert>
+    @if (_birthdays != null)
+    {
+        @foreach (var item in _birthdays.Items)
+        {
+            <BSCard CardType="CardType.Card">
+                <BSCard CardType="CardType.Image" src="placeholder:286x180" alt="Card image cap" />
+                <BSCard CardType="CardType.Body">
+                    <BSCard CardType="CardType.Title">@item.OccurAt</BSCard>
+                    <BSCard CardType="CardType.Text">
+                        Birthday of @item.Name
+                    </BSCard>
+                </BSCard>
+            </BSCard>
+        }
 
+    }
+    else
+    {
+        <BSProgress>
+            <BSProgressBar IsStriped="true" Max="100" Color="BSColor.Dark" Value="100" IsAnimated="true"></BSProgressBar>
+        </BSProgress>
+    }
+</div>
 
 @code
 {
     private CalendarViewModel _birthdays { get; set; }
+
 
     class ListData
     {
@@ -21,6 +48,7 @@
         if (firstRender)
         {
             _birthdays = await CalendarService.GetBirthdays();
+            StateHasChanged();
         }
     }
 
@@ -32,58 +60,23 @@
         {
             var birthDaysOnDate = _birthdays.Items.Where(x => x.OccurAt.Day.Equals(value.Day) && x.OccurAt.Month.Equals(value.Month)).ToList();
 
-            if(value.Month.Equals(2) && value.Day.Equals(28) && !value.IsLeapYear())
+            if (value.Month.Equals(2) && value.Day.Equals(28) && !value.IsLeapYear())
             {
                 birthDaysOnDate.AddRange(_birthdays.Items.Where(x => x.OccurAt.Day.Equals(29) && x.OccurAt.Month.Equals(2)).ToList());
             }
 
-            foreach(var birthdayItem in birthDaysOnDate)
+            foreach (var birthdayItem in birthDaysOnDate)
             {
                 listData.Add(new ListData { type = "warning", content = birthdayItem.Name });
             }
         }
-     
+
         return listData;
     }
 
-    private RenderFragment DateCellRender(DateTime value)
+    public IEnumerable<DateTime> EachDay(DateTime from, DateTime thru)
     {
-        var listData = GetListData(value);
-        return
-    @<Template>
-        <ul class="events">
-            @foreach (var data in listData)
-                {
-                    <li key="@data.content">
-                        <Badge Status="@data.type" Text="@data.content" />
-                    </li>
-                }
-            </ul>
-        </Template>;
+        for (var day = from.Date; day.Date <= thru.Date; day = day.AddDays(1))
+            yield return day;
     }
 }
-
-<style>
-    .events {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-        .events .ant-badge-status {
-            overflow: hidden;
-            white-space: nowrap;
-            width: 100%;
-            text-overflow: ellipsis;
-            font-size: 12px;
-        }
-
-    .notes-month {
-        text-align: center;
-        font-size: 28px;
-    }
-
-        .notes-month section {
-            font-size: 28px;
-        }
-</style>

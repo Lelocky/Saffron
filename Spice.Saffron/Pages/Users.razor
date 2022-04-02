@@ -2,32 +2,72 @@
 @attribute [Authorize(Policy = "ManagementOnly")]
 @inject IUserService UserService
 
-<Divider Orientation="left">User Statistics</Divider>
-<Row Gutter="16">
+@*<Divider Orientation="left">User Statistics</Divider>
+    <Row Gutter="16">
     <Col Span="12">
     <Statistic Title="Total Users" Value="@_totalUsers" />
     </Col>
-</Row>
+    </Row>
 
-<Divider Orientation="left">Users</Divider>
+    <Divider Orientation="left">Users</Divider>
 
-        @if (_users != null)
-{
+    @if (_users != null)
+    {
     <Table TItem="UserViewModel" DataSource="@_users">
-        <Column @bind-Field="@context.NickName"></Column>
-        <Column @bind-Field="@context.DateOfBirth"></Column>
-        <ActionColumn Title="Action">
-            <Space Size=@("middle")>
-                <SpaceItem>
-                    <a>Delete</a>
-                </SpaceItem>
-            </Space>
-        </ActionColumn>
+    <Column @bind-Field="@context.NickName"></Column>
+    <Column @bind-Field="@context.DateOfBirth"></Column>
+    <ActionColumn Title="Action">
+    <Space Size=@("middle")>
+    <SpaceItem>
+    <a>Delete</a>
+    </SpaceItem>
+    </Space>
+    </ActionColumn>
     </Table>
+    }
+    else
+    {
+    <Skeleton Active="true"></Skeleton>
+    }*@
+<PageTitle>Users</PageTitle>
+<div class=page-header>
+    <h2>Users</h2>
+
+</div>
+@if (_users != null)
+{
+    <BSTable IsBorderLess="true" IsCaptionTop="true" IsStriped="true">
+        <caption>List of users</caption>
+        <BSTHead>
+            <BSTR>
+                <BSTD>Nickname</BSTD>
+                <BSTD>DateOfBirth</BSTD>
+                <BSTD>Actions</BSTD>
+            </BSTR>
+        </BSTHead>
+        <BSTBody>
+            @foreach (var user in _users)
+            {
+                <BSTR>
+                    <BSTD>@user.NickName</BSTD>
+                    <BSTD>@user.DateOfBirth</BSTD>
+                    <BSTD></BSTD>
+                </BSTR>
+            }
+        </BSTBody>
+        <BSTFoot>
+            <BSTR>
+                <BSTD ColSpan="4">@_totalUsers users found</BSTD>
+            </BSTR>
+
+        </BSTFoot>
+    </BSTable>
 }
 else
 {
-    <Skeleton Active="true"></Skeleton>
+    <BSProgress>
+        <BSProgressBar IsStriped="true" Max="100" Color="BSColor.Dark" Value="100" IsAnimated="true"></BSProgressBar>
+    </BSProgress>
 }
 
 

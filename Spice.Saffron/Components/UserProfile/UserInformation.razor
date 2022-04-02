@@ -1,61 +1,69 @@
 ﻿@using System.Security.Claims
 @namespace Spice.Saffron.Components
 
-<div class="site-page-header-ghost-wrapper">
-    <PageHeader Ghost="false">
-        <PageHeaderTitle>@User?.NickName</PageHeaderTitle>
-        <PageHeaderSubtitle>All the things we know about you!</PageHeaderSubtitle>
-        <PageHeaderExtra>
-            <Button Type="@ButtonType.Primary"
-                    Icon="@IconType.Outline.Edit"
-                    OnClick="OnRedirectToEditProfile">
-                Edit Profile
-            </Button>
-            <Button Type="@ButtonType.Primary"
-                    Icon="@IconType.Outline.Poweroff"
-                    OnClick="OnRedirectToLogout">
-                Logout
-            </Button>
-        </PageHeaderExtra>
-        <PageHeaderContent>
-            @if (User != null)
-            {
-                <Descriptions Size="small" Column="3">
-                    <DescriptionsItem Title="Nickname" Span="1">@User.NickName</DescriptionsItem>
-                    <DescriptionsItem Title="DiscordId" Span="1">@User.UserName</DescriptionsItem>
-                    <DescriptionsItem Title="ProfileImage" Span="1">@User.ProfileImage</DescriptionsItem>
-                    <DescriptionsItem Title="Birthdate" Span="1">@(User.DateOfBirth != null ? User.DateOfBirth:"Unknown")</DescriptionsItem>
-                </Descriptions>
-                <p class="note">This data is stored in our database.</p>
-            }
-            else
-            {
-                <Skeleton Active="true"></Skeleton>
-            }
-        </PageHeaderContent>
-    </PageHeader>
-</div>
-<div>
-    <Divider Orientation="left">Roles</Divider>
-    <Row>
-        <Col Span="12">
-        <p>Your roles on our Discord Server. Only the useful ones ofcourse.</p>
-            @if (Claims.Count() > 0)
-            {
-                <ul>
+
+@if (User != null)
+{
+    <BSContainer>
+        <div class="user-profile">
+            <h4>General</h4>
+            <p>This information is saved in the database.</p>
+            <BSRow MarginBottom="Margins.Small">
+                <BSLabel IsColumn="true">Nickname</BSLabel>
+                <BSCol ColumnSmall="10">
+                    <BSInput InputType="InputType.Text" Value="@User.NickName" IsPlainText="true" />
+                </BSCol>
+            </BSRow>
+            <BSRow MarginBottom="Margins.Small">
+                <BSLabel IsColumn="true">DiscordId</BSLabel>
+                <BSCol ColumnSmall="10">
+                    <BSInput InputType="InputType.Text" Value="@User.UserName" IsPlainText="true" />
+                </BSCol>
+            </BSRow>
+            <BSRow MarginBottom="Margins.Small">
+                <BSLabel IsColumn="true">ProfileImage</BSLabel>
+                <BSCol ColumnSmall="10">
+                    <BSInput InputType="InputType.Text" Value="@User.ProfileImage" IsPlainText="true" />
+                </BSCol>
+            </BSRow>
+            <BSRow MarginBottom="Margins.Small">
+                <BSLabel IsColumn="true">Birthdate</BSLabel>
+                <BSCol ColumnSmall="10">
+                    @if (User.DateOfBirth != null)
+                    {
+                        <BSInput InputType="InputType.Text" Value="@User.DateOfBirth" IsPlainText="true" />
+                    }
+                </BSCol>
+            </BSRow>
+            <div class="roles">
+                <h4>Roles</h4>
+                <p>Your roles on our Discord Server. Only the useful ones ofcourse.</p>
+                @if (Claims.Count() > 0)
+                {
+                    <ul>
                         @foreach (var claim in Claims)
                         {
-                        <li>@claim.Value</li>
+                            <li>@claim.Value</li>
                         }
-                </ul>
-            }
-            else
-            {
-                <p>None</p>
-            }
-        </Col>
-    </Row>
-</div>
+                    </ul>
+                }
+                else
+                {
+                    <p>None</p>
+                }
+            </div>
+        </div>
+
+        <BSButton Color="BSColor.Dark" OnClick="OnRedirectToEditProfile">Change profile</BSButton>
+    </BSContainer>
+}
+else
+{
+    <BSProgress>
+        <BSProgressBar IsStriped="true" Max="100" Color="BSColor.Dark" Value="100" IsAnimated="true"></BSProgressBar>
+    </BSProgress>
+}
+
 
 @code {
     [Parameter]

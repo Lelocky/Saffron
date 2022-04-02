@@ -1,38 +1,24 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
-<div>
-    <Row>
-        <Col Span="12" Offset="6">
-        <div class="homepage-welcome">
-            <h1>Welcome to Saffron!</h1>
-            <div class=homepage-welcome-banner>
-                <img src="https://via.placeholder.com/700x200.png?text=Nice+FC+Picture" />
-            </div>
+
+<div class="homepage">
+    <div class="homepage-welcome">
+        <h1>Welcome to Saffron!</h1>
+        <div class=homepage-welcome-banner>
+            <BSImage Source="700x200xResponsive image" IsFluid="true" IsPlaceholder="true" />
         </div>
-        </Col>
-    </Row>
-    <AuthorizeView>
-        <Authorized>
-            <Row>
-                <Col Span="12" Offset="6">
-                <p>Lol noobs</p>
-                </Col>
-            </Row>
-        </Authorized>
-        <NotAuthorized>
-            <Row>
-                <Col Span="12" Offset="6">
-                <div class="homepage-login">
-                    <Button Type="@ButtonType.Primary"
-                            Icon="@IconType.Outline.User"
-                            OnClick="OnRedirectToLogin">
-                        Login with Discord
-                    </Button>
-                </div>
-                </Col>
-            </Row>
-        </NotAuthorized>
-    </AuthorizeView>
+    </div>
+    <div class="homepage-content">
+        <AuthorizeView>
+            <Authorized>
+                <p>There is still plenty of work to be done, but take a look around!</p>
+            </Authorized>
+            <NotAuthorized>
+                <p>Please login to continue.</p>
+                <BSButton Color="BSColor.Dark" Size="Size.ExtraExtraLarge" OnClick="OnRedirectToLogin">Login with discord</BSButton>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
 </div>
 
 @code {

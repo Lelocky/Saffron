@@ -1,3 +1,4 @@
+using BlazorStrap;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
@@ -67,7 +68,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CommunityOnly", policy => policy.RequireRole("Member", "Coconut Farmer", "Founder", "Officer", "Leader", "Company Friend"));
 });
 
-builder.Services.AddAntDesign();
+builder.Services.AddBlazorStrap();
 
 var app = builder.Build();
 

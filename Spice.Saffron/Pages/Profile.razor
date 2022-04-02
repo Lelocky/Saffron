@@ -5,32 +5,51 @@
 @inject IUserService UserService
 
 <PageTitle>@_title</PageTitle>
-<AuthorizeView>
-    <Authorized>
-        <UserInformation OnRedirectToEditProfile=@RedirectToEditProfile
-                         OnRedirectToLogout=@RedirectToLogout
-                         User=@_user
-                         Claims=@_claims.Where(x => x.Type.Equals(ClaimTypes.Role))>
-        </UserInformation>
-    </Authorized>
-    <NotAuthorized>
-        <LoginRedirect />
-    </NotAuthorized>
-</AuthorizeView>
+<div class=page-header>
+    <h2>Profile</h2>
 
-<AuthorizeView Policy="ManagementOnly">
-    <Authorized>
-        <UserClaims Claims=@_claims>
-        </UserClaims>
-    </Authorized>
-</AuthorizeView>
-
-<AuthorizeView>
-    <Authorized>
-       <DeleteAccount OnDeleteAccount=@DeleteAccount></DeleteAccount>
-    </Authorized>
-</AuthorizeView>
-
+</div>
+<BSAccordion>
+    <AuthorizeView>
+        <Authorized>
+            <BSAccordionItem DefaultShown="true" AlwaysOpen="true">
+                <Header>@_title</Header>
+                <Content>
+                    <UserInformation OnRedirectToEditProfile=@RedirectToEditProfile
+                                     OnRedirectToLogout=@RedirectToLogout
+                                     User=@_user
+                                     Claims=@_claims.Where(x => x.Type.Equals(ClaimTypes.Role))>
+                    </UserInformation>
+                </Content>
+            </BSAccordionItem>
+        </Authorized>
+        <NotAuthorized>
+            <LoginRedirect />
+        </NotAuthorized>
+    </AuthorizeView>
+    <AuthorizeView Policy="ManagementOnly">
+        <Authorized>
+            <BSAccordionItem DefaultShown="true" AlwaysOpen="true">
+                <Header>Claims</Header>
+                <Content>
+                    <UserClaims Claims=@_claims>
+                    </UserClaims>
+                </Content>
+            </BSAccordionItem>
+        </Authorized>
+    </AuthorizeView>
+    <AuthorizeView>
+        <Authorized>
+            <BSAccordionItem DefaultShown="false">
+                <Header>Delete account</Header>
+                <Content>
+                    <DeleteAccount OnDeleteAccount=@DeleteAccount></DeleteAccount>
+                </Content>
+            </BSAccordionItem>
+           
+        </Authorized>
+    </AuthorizeView>
+</BSAccordion>
 <style>
     .gutter-box {
         padding: 8px 0;

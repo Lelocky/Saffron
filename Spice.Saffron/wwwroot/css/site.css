@@ -39,8 +39,13 @@
         content: "An error has occurred."
     }
 
+.content {
+    margin-top: 25px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom:25px;
+}
 .homepage-welcome h1 {
-    font-size:45px;
     text-align:center;
 }
 
@@ -54,8 +59,8 @@
     text-align:center;
 }
 
-.homepage-login
-{
-    margin-top:15px;
+.homepage-content{
+    margin-top:10px;
     text-align:center;
 }
+

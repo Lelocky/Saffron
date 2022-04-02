@@ -52,7 +52,7 @@ namespace Spice.Saffron.Services
             {
                 new SpiceRole{ Id = "456089936148561920", Name = "Leader" },
                 new SpiceRole{ Id = "456090312713175052", Name = "Officer" },
-                new SpiceRole{ Id = "456090312713175052", Name = "Member" },
+                new SpiceRole{ Id = "456101564533309442", Name = "Member" },
                 new SpiceRole{ Id = "456101628349513739", Name = "Coconut" },
                 new SpiceRole{ Id = "457899357740728330", Name = "Company Friend" },
                 new SpiceRole{ Id = "456089498581729290", Name = "Founder" },

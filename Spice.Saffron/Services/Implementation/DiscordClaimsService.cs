@@ -22,7 +22,7 @@ namespace Spice.Saffron.Services
         {
             if (string.IsNullOrWhiteSpace(userId)) { throw new ArgumentNullException(nameof(userId)); }
 
-            var userRoles = await _discordService.GetUserRoles(_guildSettings.Id, userId);
+            var userRoles = await _discordService.GetUserRolesAsync(_guildSettings.Id, userId);
 
             if (userRoles == null)
             {

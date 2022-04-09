@@ -12,6 +12,8 @@ namespace Spice.DiscordClient.DependencyInjection
         {
             services.Configure(configureOptions);
             services.AddHttpClient<IDiscordService, DiscordService>();
+            services.AddSingleton<IDiscordCache, DiscordCache>();
+            services.AddDistributedMemoryCache();
             return services;
         }
     }

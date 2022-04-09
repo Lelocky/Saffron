@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Spice.DiscordClient.Exceptions
 {
-    internal class RolesNotFoundException : Exception
+    internal class MemberNotFoundException : Exception
     {
-        public RolesNotFoundException(string guildId, string userId)
+        public MemberNotFoundException(string guildId, string userId)
         {
             GuildId = guildId;
             UserId = userId;

@@ -9,7 +9,7 @@
             </Toggler>
             <Content>
                 <BSNav MarginEnd="Margins.Auto" MarginBottom="Margins.Small" Class="mb-lg-0">
-                    <BSNavItem IsActive="true" Url="/">Home</BSNavItem> 
+                    <BSNavItem IsActive="true" Url="/">Home</BSNavItem>
                     <AuthorizeView>
                         <Authorized>
                             <BSNavItem Url="calendar">Calendar</BSNavItem>
@@ -18,6 +18,16 @@
                     <AuthorizeView Policy="ManagementOnly">
                         <Authorized>
                             <BSNavItem Url="users">Users</BSNavItem>
+                            <BSNavItem IsDropdown="true">
+                                <BSDropdown>
+                                    <Toggler><BSToggle IsNavLink="true">Manage</BSToggle></Toggler>
+                                    <Content>
+                                        <BSDropdownItem Url="manage/application">Application</BSDropdownItem>
+                                        <BSDropdownItem Url="manage/bot">Bot</BSDropdownItem>
+                                        
+                                    </Content>
+                                </BSDropdown>
+                            </BSNavItem>
                         </Authorized>
                     </AuthorizeView>
                 </BSNav>

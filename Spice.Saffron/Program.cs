@@ -1,23 +1,14 @@
 using BlazorStrap;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Spice.DiscordClient.DependencyInjection;
-using Spice.Saffron;
 using Spice.Saffron.Areas.Identity;
 using Spice.Saffron.Configuration.Options;
 using Spice.Saffron.Data;
 using Spice.Saffron.Factories;
 using Spice.Saffron.Services;
-using System.Configuration;
-using System.Net;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +34,7 @@ builder.Services.AddDiscordService(options =>
     options.BotToken = discordbotConfig.BotToken;
 });
 
-builder.Services.AddSingleton<IDiscordClaimsService, DiscordClaimsService>();
+builder.Services.AddSingleton<IDiscordService, DiscordService>();
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>,AdditionalUserClaimsPrincipalFactory>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
@@ -98,7 +89,6 @@ app.UseCookiePolicy(new CookiePolicyOptions
 {
     Secure = CookieSecurePolicy.Always
 });
-
 
 app.UseAuthentication();
 app.UseAuthorization();

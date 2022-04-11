@@ -9,13 +9,13 @@ namespace Spice.Saffron.Factories
 {
 	public class AdditionalUserClaimsPrincipalFactory: UserClaimsPrincipalFactory<ApplicationUser>
 	{
-		private readonly IDiscordClaimsService _claimsService;
+		private readonly IDiscordService _claimsService;
 		private readonly UserManager<ApplicationUser> _userManager;
 
 		public AdditionalUserClaimsPrincipalFactory(
 			UserManager<ApplicationUser> userManager,
 			IOptions<IdentityOptions> optionsAccessor,
-			IDiscordClaimsService claimsService)
+			IDiscordService claimsService)
 			: base(userManager, optionsAccessor)
 		{ 
 			_claimsService = claimsService;

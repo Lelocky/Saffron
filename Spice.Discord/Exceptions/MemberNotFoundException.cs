@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spice.DiscordClient.Exceptions
 {
-    internal class MemberNotFoundException : Exception
+    public class MemberNotFoundException : Exception
     {
         public MemberNotFoundException(string guildId, string userId)
         {

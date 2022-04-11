@@ -18,13 +18,14 @@
 </BSAccordion>
 
 @code {
-   private string _productVersion;
+    private string _productVersion;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _productVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+            StateHasChanged();
         }
     }
 }

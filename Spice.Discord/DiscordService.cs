@@ -47,27 +47,29 @@ namespace Spice.DiscordClient
 
             try
             {
-               //No caching because this is used for authentication
+                //No caching because this is used for authentication
                 var result = await GetAsync($"guilds/{guildId}/members/{userId}", isRatedLimitedCall);
                 if (result == null)
                 {
-                    throw new RolesNotFoundException(guildId, userId);
+                    throw new MemberNotFoundException(guildId, userId);
                 }
 
                 //But we can cache the member to use it later
-                _ = _cache.SetMemberAsync(guildId, userId, result);
-
-                return JsonConvert.DeserializeObject<Member>(result, new JsonSerializerSettings
+                var member = JsonConvert.DeserializeObject<Member>(result, new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore,
                     Formatting = Formatting.Indented
-                }).Roles;
+                });
+
+                await _cache.SetMemberAsync(guildId, userId, member);
+
+                return member.Roles;
             }
-            catch (RolesNotFoundException)
+            catch (MemberNotFoundException)
             {
                 throw;
             }
-            catch(RateLimitException)
+            catch (RateLimitException)
             {
                 throw;
             }
@@ -99,14 +101,17 @@ namespace Spice.DiscordClient
                     throw new MemberNotFoundException(guildId, userId);
                 }
 
-                _ = _cache.SetMemberAsync(guildId, userId, result);
-                return JsonConvert.DeserializeObject<Member>(result, new JsonSerializerSettings
+                var member = JsonConvert.DeserializeObject<Member>(result, new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore,
                     Formatting = Formatting.Indented
                 });
+
+                await _cache.SetMemberAsync(guildId, userId, member);
+
+                return member;
             }
-            catch (RolesNotFoundException)
+            catch (GuildRolesNotFoundException)
             {
                 throw;
             }
@@ -121,6 +126,85 @@ namespace Spice.DiscordClient
             }
         }
 
+        public async Task<GuidRoles> GetGuildRolesAsync(string guildId)
+        {
+            var isRatedLimitedCall = false;
+
+            if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
+
+            try
+            {
+                var cached = await _cache.GetGuildRolesAsync(guildId);
+                if (cached != null)
+                {
+                    return cached;
+                }
+
+                var result = await GetAsync($"guilds/{guildId}/roles", isRatedLimitedCall);
+                if (result == null)
+                {
+                    throw new GuildRolesNotFoundException(guildId);
+                }
+
+                var roles = JsonConvert.DeserializeObject<IEnumerable<Role>>(result, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.Indented
+                });
+
+                var guildRoles = new GuidRoles { Roles = roles };
+
+                await _cache.SetRolesAsync(guildId, guildRoles);
+
+                return guildRoles;
+            }
+            catch (GuildRolesNotFoundException)
+            {
+                throw;
+            }
+            catch (RateLimitException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while getting user roles.");
+                throw;
+            }
+        }
+
+        public async Task RemoveMemberFromCacheAsync(string guildId, string userId)
+        {
+            if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
+            if (string.IsNullOrWhiteSpace(userId)) { throw new ArgumentNullException(nameof(userId)); }
+
+            try
+            {
+                await _cache.RemoveMemberFromCacheAsync(guildId, userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Unknown error while removing member from cache.");
+                throw;
+            }
+        }
+
+        public async Task RemoveGuildRolesFromCacheAsync(string guildId)
+        {
+            if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
+
+            try
+            {
+                await _cache.RemoveGuildRolesFromCacheAsync(guildId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Unknown error while removing roles from cache.");
+                throw;
+            }
+        }
+
+        //Should be moved to it's own classs
         private async Task<string> GetAsync(string requestUri, bool isRateLimitedCall)
         {
             if (string.IsNullOrEmpty(requestUri)) { throw new ArgumentNullException(nameof(requestUri)); }
@@ -145,5 +229,7 @@ namespace Spice.DiscordClient
             _rateLimitInformation.ResetAfter = headers.GetRateLimitResetAfter();
             _rateLimitInformation.Reset = headers.GetRateLimitReset();
         }
+
+        
     }
 }

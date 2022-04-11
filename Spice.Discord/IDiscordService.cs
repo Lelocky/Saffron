@@ -10,5 +10,8 @@ namespace Spice.DiscordClient
     {
         Task<List<string>> GetUserRolesAsync(string guildId, string userId);
         Task<Member> GetMemberAsync(string guildId, string userId);
+        Task RemoveMemberFromCacheAsync(string guildId, string userId);
+        Task<GuidRoles> GetGuildRolesAsync(string guildId);
+        Task RemoveGuildRolesFromCacheAsync(string guildId);
     }
 }

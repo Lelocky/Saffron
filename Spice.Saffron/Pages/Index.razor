@@ -1,25 +1,37 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
 
-<div class="homepage">
-    <div class="homepage-welcome">
-        <h1>Welcome to Saffron!</h1>
-        <div class=homepage-welcome-banner>
-            <BSImage Source="700x200xResponsive image" IsFluid="true" IsPlaceholder="true" />
-        </div>
-    </div>
-    <div class="homepage-content">
+<BSContainer>
+    <BSRow Align="Align.Default">
         <AuthorizeView>
             <Authorized>
-                <p>There is still plenty of work to be done, but take a look around!</p>
+                <BSCol Column=8>
+                    <div class="homepage-welcome">
+                        <h2>Welcome to Saffron!</h2>
+                        <div class=homepage-welcome-banner>
+                            <BSImage Source="600x150xResponsive image" IsFluid="true" IsPlaceholder="true" />
+                        </div>
+                        <p>Everything is still being build, but feel free to take a look around!</p>
+                    </div>
+                    <div class=homepage-content>
+                        <h4>What is this place?</h4>
+                        <p>Good question!</p>
+                    </div>
+                </BSCol>
+                <BSCol Column=4>
+                    <div class="homepage-events">
+                        <Events></Events>
+                    </div>
+                </BSCol>
             </Authorized>
             <NotAuthorized>
+                <h1>Welcome to Saffron!</h1>
                 <p>Please login to continue.</p>
                 <BSButton Color="BSColor.Dark" Size="Size.ExtraExtraLarge" OnClick="OnRedirectToLogin">Login with discord</BSButton>
             </NotAuthorized>
         </AuthorizeView>
-    </div>
-</div>
+    </BSRow>
+</BSContainer>
 
 @code {
     private void OnRedirectToLogin()

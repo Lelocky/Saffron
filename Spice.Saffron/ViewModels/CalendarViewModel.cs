@@ -14,13 +14,15 @@
 
     public class CalendarItemViewModel
     {
-        public CalendarItemViewModel(string name, DateTime occurAt)
+        public CalendarItemViewModel(string name, DateTimeOffset occurAt, string description)
         {
             Name = name;
             OccurAt = occurAt;
+            Description = description;
         }
         public string Name { get; set; }
-        public DateTime OccurAt { get; set; }
+        public DateTimeOffset OccurAt { get; set; }
+        public string Description { get; set; }
     }
 
     public enum CalendarType

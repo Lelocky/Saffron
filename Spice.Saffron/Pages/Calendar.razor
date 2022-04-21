@@ -30,11 +30,36 @@
             <BSProgressBar IsStriped="true" Max="100" Color="BSColor.Dark" Value="100" IsAnimated="true"></BSProgressBar>
         </BSProgress>
     }
+
+    @if (_events != null)
+    {
+        @foreach (var item in _events.Items)
+        {
+            <BSCard CardType="CardType.Card">
+                <BSCard CardType="CardType.Image" src="placeholder:286x180" alt="Card image cap" />
+                <BSCard CardType="CardType.Body">
+                    <BSCard CardType="CardType.Title">@item.Name</BSCard>
+                    <BSCard CardType="CardType.Text">
+                       <p>@item.Description</p>
+                       <p>@item.OccurAt</p>
+                    </BSCard>
+                </BSCard>
+            </BSCard>
+        }
+
+    }
+    else
+    {
+        <BSProgress>
+            <BSProgressBar IsStriped="true" Max="100" Color="BSColor.Dark" Value="100" IsAnimated="true"></BSProgressBar>
+        </BSProgress>
+    }
 </div>
 
 @code
 {
     private CalendarViewModel _birthdays { get; set; }
+    private CalendarViewModel _events { get; set; }
 
 
     class ListData
@@ -48,6 +73,7 @@
         if (firstRender)
         {
             _birthdays = await CalendarService.GetBirthdays();
+            _events = await CalendarService.GetEvents();
             StateHasChanged();
         }
     }

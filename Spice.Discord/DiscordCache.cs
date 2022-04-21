@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Spice.DiscordClient
 {
+    //What is abstraction right?
     internal class DiscordCache : IDiscordCache
     {
         private readonly IDistributedCache _cache;
@@ -50,7 +51,7 @@ namespace Spice.DiscordClient
             }
         }
 
-        public async Task<GuidRoles> GetGuildRolesAsync(string guildId)
+        public async Task<GuildRoles> GetGuildRolesAsync(string guildId)
         {
             if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
             
@@ -59,7 +60,7 @@ namespace Spice.DiscordClient
                 var cachedRoles = await _cache.GetStringAsync(GetRolesCacheKey(guildId));
                 if (cachedRoles != null)
                 {
-                    var roles = JsonConvert.DeserializeObject<GuidRoles>(cachedRoles, new JsonSerializerSettings
+                    var roles = JsonConvert.DeserializeObject<GuildRoles>(cachedRoles, new JsonSerializerSettings
                     {
                         NullValueHandling = NullValueHandling.Ignore,
                         Formatting = Formatting.Indented
@@ -99,7 +100,7 @@ namespace Spice.DiscordClient
             }
         }
 
-        public async Task SetRolesAsync(string guildId, GuidRoles guildRoles)
+        public async Task SetRolesAsync(string guildId, GuildRoles guildRoles)
         {
             if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
             if (guildRoles == null) { throw new ArgumentNullException(nameof(guildRoles)); }
@@ -150,6 +151,69 @@ namespace Spice.DiscordClient
             }
         }
 
+        public async Task<GuildEvents> GetGuildEventsAsync(string guildId)
+        {
+            if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
+
+            try
+            {
+                var cachedEvents = await _cache.GetStringAsync(GetEventsCacheKey(guildId));
+                if (cachedEvents != null)
+                {
+                    var events = JsonConvert.DeserializeObject<GuildEvents>(cachedEvents, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        Formatting = Formatting.Indented
+                    });
+
+                    events.RetrievedFromCache = true;
+                    return events;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Unknown error while getting events from cache.");
+                throw;
+            }
+        }
+
+        public async Task SetGuildEventsAsync(string guildId, GuildEvents guildEvents)
+        {
+            if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
+            if (guildEvents == null) { throw new ArgumentNullException(nameof(guildEvents)); }
+
+            try
+            {
+                var cachingKey = GetEventsCacheKey(guildId);
+
+                guildEvents.CachedAt = DateTimeOffset.Now;
+
+                await _cache.SetStringAsync(cachingKey, JsonConvert.SerializeObject(guildEvents), new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(20) });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Unknown error while setting events in cache.");
+                throw;
+            }
+        }
+
+        public async Task RemoveGuildEventsFromCacheAsync(string guildId)
+        {
+            if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
+
+            try
+            {
+                await _cache.RemoveAsync(GetEventsCacheKey(guildId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Unknown error while removing events from cache.");
+                throw;
+            }
+        }
+
         private string GetMemberCacheKey(string guildId, string userId)
         {
             return $"MEMBER-{guildId}-{userId}";
@@ -160,6 +224,9 @@ namespace Spice.DiscordClient
             return $"GUILDROLES-{guildId}";
         }
 
-       
+        private string GetEventsCacheKey(string guildId)
+        {
+            return $"GUILDEVENTS-{guildId}";
+        }
     }
 }

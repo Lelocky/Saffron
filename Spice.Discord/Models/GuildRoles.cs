@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Spice.DiscordClient.Models
 {
-    public class GuidRoles : Cacheable
+    public class GuildRoles : Cacheable
     {
         public IEnumerable<Role> Roles { get; set;}
     }

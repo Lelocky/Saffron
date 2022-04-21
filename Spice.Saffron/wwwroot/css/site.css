@@ -49,19 +49,21 @@
     text-align:center;
 }
 
-.homepage-welcome h2 {
-    font-size: 20px;
-    margin-top: 10px;
-    text-align:center;
+.homepage-welcome{
+    text-align: center;
 }
 
 .homepage-welcome-banner{
     text-align:center;
+    margin-bottom:5px;
+}
+.homepage-events h5 {
+    text-align: center;
 }
 
-.homepage-content{
-    margin-top:10px;
-    text-align:center;
+.homepage-content {
+    margin-top: 15px;
+    text-align: center;
 }
 
 ul{

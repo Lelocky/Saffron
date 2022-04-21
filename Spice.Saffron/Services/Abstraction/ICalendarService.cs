@@ -5,5 +5,6 @@ namespace Spice.Saffron.Services
     public interface ICalendarService
     {
         Task<CalendarViewModel> GetBirthdays();
+        Task<CalendarViewModel> GetEvents();
     }
 }

@@ -1,0 +1,52 @@
+﻿@inject ICalendarService CalendarService
+@namespace Spice.Saffron.Components
+
+ @if (!_loading && _events != null)
+{
+    <h5>@_headerName <BSBadge Color="BSColor.Primary">@_events.Items.Count</BSBadge></h5>
+    <BSCarousel HasIndicators="true">
+        @foreach (var item in _events.Items)
+        {
+            <BSCarouselItem>
+                <BSCard CardType="CardType.Card">
+                    <BSCard CardType="CardType.Image" src="placeholder:250x150" alt="Card image cap" />
+                    <BSCard CardType="CardType.Body">
+                        <BSCard CardType="CardType.Title">@item.Name</BSCard>
+                        <BSCard CardType="CardType.Text">
+                            <p>@item.Description</p>
+                            <p>@item.OccurAt</p>
+                        </BSCard>
+                    </BSCard>
+                </BSCard>
+            </BSCarouselItem>
+        }
+    </BSCarousel>
+}
+else if (!_loading)
+{
+    <h5>@_headerName</h5>
+    <p>No events scheduled</p>
+}
+else
+{
+    <h5>@_headerName</h5>
+    <BSProgress>
+        <BSProgressBar IsStriped="true" Max="100" Color="BSColor.Dark" Value="100" IsAnimated="true"></BSProgressBar>
+    </BSProgress>
+}
+
+@code {
+    private CalendarViewModel _events { get; set; }
+    private bool _loading { get; set; } = true;
+    private string _headerName { get; set; } = "Events";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _events = await CalendarService.GetEvents();
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+}

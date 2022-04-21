@@ -14,6 +14,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static Spice.DiscordClient.Models.GuildEvents;
 
 namespace Spice.DiscordClient
 {
@@ -126,7 +127,7 @@ namespace Spice.DiscordClient
             }
         }
 
-        public async Task<GuidRoles> GetGuildRolesAsync(string guildId)
+        public async Task<GuildRoles> GetGuildRolesAsync(string guildId)
         {
             var isRatedLimitedCall = false;
 
@@ -152,7 +153,7 @@ namespace Spice.DiscordClient
                     Formatting = Formatting.Indented
                 });
 
-                var guildRoles = new GuidRoles { Roles = roles };
+                var guildRoles = new GuildRoles { Roles = roles };
 
                 await _cache.SetRolesAsync(guildId, guildRoles);
 
@@ -230,6 +231,66 @@ namespace Spice.DiscordClient
             _rateLimitInformation.Reset = headers.GetRateLimitReset();
         }
 
-        
+        public async Task<GuildEvents> GetGuildEventsAsync(string guildId)
+        {
+            var isRatedLimitedCall = true;
+
+            if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
+
+            try
+            {
+                var cached = await _cache.GetGuildEventsAsync(guildId);
+                if (cached != null)
+                {
+                    return cached;
+                }
+
+                var result = await GetAsync($"guilds/{guildId}/scheduled-events", isRatedLimitedCall);
+                if (result == null)
+                {
+                    throw new GuildEventsNotFoundException(guildId);
+                }
+
+                var events = JsonConvert.DeserializeObject<IEnumerable<GuildEvent>>(result, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.Indented
+                });
+
+                var guildEvents = new GuildEvents { Events = events };
+
+                await _cache.SetGuildEventsAsync(guildId, guildEvents);
+
+                return guildEvents;
+            }
+            catch (GuildRolesNotFoundException)
+            {
+                throw;
+            }
+            catch (RateLimitException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while getting events.");
+                throw;
+            }
+        }
+
+        public async Task RemoveGuildEventsFromCacheAsync(string guildId)
+        {
+            if (string.IsNullOrWhiteSpace(guildId)) { throw new ArgumentNullException(nameof(guildId)); }
+
+            try
+            {
+                await _cache.RemoveGuildEventsFromCacheAsync(guildId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Unknown error while removing events from cache.");
+                throw;
+            }
+        }
     }
 }

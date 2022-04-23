@@ -112,7 +112,7 @@ namespace Spice.DiscordClient
 
                 return member;
             }
-            catch (GuildRolesNotFoundException)
+            catch (MemberNotFoundException)
             {
                 throw;
             }

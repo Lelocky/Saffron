@@ -62,7 +62,7 @@ namespace Spice.DiscordClient
                     Formatting = Formatting.Indented
                 });
 
-                await _cache.SetMemberAsync(guildId, userId, member);
+                await _cache.Set(member, $"{guildId}-{userId}");
 
                 return member.Roles;
             }
@@ -90,7 +90,7 @@ namespace Spice.DiscordClient
 
             try
             {
-                var cached = await _cache.GetMemberAsync(guildId, userId);
+                var cached = await _cache.Get<Member>($"{guildId}-{userId}");
                 if (cached != null)
                 {
                     return cached;
@@ -108,7 +108,7 @@ namespace Spice.DiscordClient
                     Formatting = Formatting.Indented
                 });
 
-                await _cache.SetMemberAsync(guildId, userId, member);
+                await _cache.Set(member, $"{guildId}-{userId}");
 
                 return member;
             }
@@ -135,7 +135,7 @@ namespace Spice.DiscordClient
 
             try
             {
-                var cached = await _cache.GetGuildRolesAsync(guildId);
+                var cached = await _cache.Get<GuildRoles>(guildId);
                 if (cached != null)
                 {
                     return cached;
@@ -155,7 +155,7 @@ namespace Spice.DiscordClient
 
                 var guildRoles = new GuildRoles { Roles = roles };
 
-                await _cache.SetRolesAsync(guildId, guildRoles);
+                await _cache.Set(guildRoles, guildId);
 
                 return guildRoles;
             }
@@ -181,7 +181,7 @@ namespace Spice.DiscordClient
 
             try
             {
-                await _cache.RemoveMemberFromCacheAsync(guildId, userId);
+                await _cache.Remove<Member>($"{guildId}-{userId}");
             }
             catch (Exception ex)
             {
@@ -196,7 +196,7 @@ namespace Spice.DiscordClient
 
             try
             {
-                await _cache.RemoveGuildRolesFromCacheAsync(guildId);
+                await _cache.Remove<GuildRoles>(guildId);
             }
             catch (Exception ex)
             {
@@ -239,7 +239,7 @@ namespace Spice.DiscordClient
 
             try
             {
-                var cached = await _cache.GetGuildEventsAsync(guildId);
+                var cached = await _cache.Get<GuildEvents>(guildId);
                 if (cached != null)
                 {
                     return cached;
@@ -259,7 +259,7 @@ namespace Spice.DiscordClient
 
                 var guildEvents = new GuildEvents { Events = events };
 
-                await _cache.SetGuildEventsAsync(guildId, guildEvents);
+                await _cache.Set(guildEvents, guildId);
 
                 return guildEvents;
             }
@@ -284,7 +284,7 @@ namespace Spice.DiscordClient
 
             try
             {
-                await _cache.RemoveGuildEventsFromCacheAsync(guildId);
+                await _cache.Remove<GuildEvents>(guildId);
             }
             catch (Exception ex)
             {

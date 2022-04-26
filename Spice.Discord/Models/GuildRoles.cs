@@ -9,8 +9,15 @@ namespace Spice.DiscordClient.Models
 {
     public class GuildRoles : Cacheable
     {
+        internal const string KeyPrefix = "GUILDROLES-";
         public IEnumerable<Role> Roles { get; set;}
+
+        internal override string GetKey(string keyPartial)
+        {
+            return KeyPrefix + keyPartial;
+        }
     }
+}
 
     public class Role
     {
@@ -26,4 +33,5 @@ namespace Spice.DiscordClient.Models
         [JsonProperty("unicode_emoji")]
         public string UnicodeEmoji { get; set; }
     }
-}
+
+    

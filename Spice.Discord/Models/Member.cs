@@ -9,6 +9,7 @@ namespace Spice.DiscordClient.Models
 {
     public class Member : Cacheable
     {
+        internal const string KeyPrefix = "GUILDMEMBER-";
         public List<string> Roles { get; set; }
         public User User { get; set; }
         public string Nick { get; set; }
@@ -26,6 +27,9 @@ namespace Spice.DiscordClient.Models
         public bool Mute { get; set; }
         public bool Deaf { get; set; }
 
-
+        internal override string GetKey(string keyPartial)
+        {
+            return KeyPrefix + keyPartial;
+        }
     }
 }

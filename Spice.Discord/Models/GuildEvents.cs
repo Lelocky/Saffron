@@ -9,6 +9,7 @@ namespace Spice.DiscordClient.Models
 {
     public class GuildEvents : Cacheable
     {
+        internal const string KeyPrefix = "GUILDEVENTS-";
         public IEnumerable<GuildEvent> Events { get; set; }
 
         public class GuildEvent
@@ -31,6 +32,10 @@ namespace Spice.DiscordClient.Models
             public string Id { get; set; }
             public string Username { get; set; }
             public string Avatar { get; set; }
+        }
+        internal override string GetKey(string keyPartial)
+        {
+            return KeyPrefix + keyPartial;
         }
     }
 }

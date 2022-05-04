@@ -1,0 +1,31 @@
+﻿@page "/dashboard"
+@attribute [Authorize(Policy = "CommunityOnly")]
+
+<BSContainer>
+    <BSRow Align="Align.Default">
+        <BSCol Column=8>
+            <div class="dashboard-welcome">
+                <h2>Welcome to Saffron!</h2>
+                <div class=dashboard-welcome-banner>
+                    <BSImage Source="600x150xResponsive image" IsFluid="true" IsPlaceholder="true" />
+                </div>
+                <p>Everything is still being build, but feel free to take a look around!</p>
+            </div>
+            <div class=dashboard-content>
+                <h4>What is this place?</h4>
+                <p>Good question!</p>
+            </div>
+        </BSCol>
+        <BSCol Column=4>
+            <div class="dashboard-events">
+                <Events></Events>
+            </div>
+        </BSCol>
+    </BSRow>
+</BSContainer>
+
+
+
+@code {
+
+}

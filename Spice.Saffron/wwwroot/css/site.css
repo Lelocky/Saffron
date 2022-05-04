@@ -45,23 +45,24 @@
     padding-bottom: 5px;
     margin-bottom:25px;
 }
+
 .homepage-welcome h1 {
     text-align:center;
 }
 
-.homepage-welcome{
+.dashboard-welcome {
     text-align: center;
 }
 
-.homepage-welcome-banner{
-    text-align:center;
-    margin-bottom:5px;
+.dashboard-welcome-banner {
+    text-align: center;
+    margin-bottom: 5px;
 }
-.homepage-events h5 {
+.dashboard-events h5 {
     text-align: center;
 }
 
-.homepage-content {
+.dashboard-content {
     margin-top: 15px;
     text-align: center;
 }
@@ -69,4 +70,52 @@
 ul{
     list-style-type:none;
     padding-left:0;
+}
+
+.homepage
+{
+    padding:0;
+    height:100vh;
+}
+
+.homepage .row{
+    margin:0;
+    padding:0;
+}
+
+.homepage-image-col
+{
+    padding:0;
+}
+
+.homepage-image-wrapper {
+    width: 100%;
+    height: 100vh;
+    max-height: 100%;
+    background-image: url(../images/homepage-bgimage-1.jpg);
+    background-size:cover;
+    background-color: #55595c;
+    background-repeat: space;
+    background-position: center;
+}
+
+.homepage-content {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.homepage-logo
+{
+    margin-bottom:25px;
+}
+
+.homepage-logo img
+{
+    width:6em;
+}
+
+.homepage-welcome {
+    text-align: center;
 }

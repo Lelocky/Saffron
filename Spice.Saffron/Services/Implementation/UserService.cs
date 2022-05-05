@@ -31,6 +31,7 @@ namespace Spice.Saffron.Services
                         DateOfBirth = user.DateOfBirth,
                         ProfileImage = user.ProfileImage,
                         UserName = user.UserName,
+                        IngameName = user.IngameName
                     };
                 }
             }
@@ -90,7 +91,7 @@ namespace Spice.Saffron.Services
                             NickName = user.Nickname,
                             DateOfBirth = user.DateOfBirth,
                             ProfileImage = user.ProfileImage,
-                            UserName = user.UserName,
+                            IngameName = user.IngameName,
                         });
                     }
                 }
@@ -103,8 +104,9 @@ namespace Spice.Saffron.Services
             return userViewModels;
         }
 
-        public async Task<bool> UpdateUserDateOfBirth(string userName, DateTime dateOfBirth)
+        public async Task<bool> UpdateUserDateOfBirthAsync(string userName, DateTime dateOfBirth)
         {
+            //Probably combine this and ingamename to update profile. Lazyness!
             if (string.IsNullOrWhiteSpace(userName)) { throw new ArgumentNullException(nameof(userName)); }
 
             try
@@ -136,6 +138,42 @@ namespace Spice.Saffron.Services
 
             return false;
         }
+
+        public async Task<bool> UpdateIngameNameAsync(string userName, string ingameName)
+        {
+            if (string.IsNullOrWhiteSpace(userName)) { throw new ArgumentNullException(nameof(userName)); }
+
+            try
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                if (user == null)
+                {
+                    return false;
+                }
+
+                user.IngameName = ingameName;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation($"Updated user date of birth with id [{user.Id}]");
+                    return true;
+                }
+                else
+                {
+                    _logger.LogCritical($"Failed to update user date of birth with id [{user.Id}]");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while updating date of birth with userName [{userName}]");
+            }
+
+            return false;
+        }
+
+
     }
 }
 

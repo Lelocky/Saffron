@@ -5,6 +5,7 @@ namespace Spice.Saffron.Services
 {   public interface IDiscordService
     {
         Task<List<Claim>> GetDiscordRolesAsClaimsAsync(string userId);
-        Task<ServerRolesViewModel> GetServerRoles();
+        Task<ServerRolesViewModel> GetServerRolesAsync();
+        Task<ChannelMessagesViewModel> GetChannelMessagesAsync(string channelId);
     }
 }

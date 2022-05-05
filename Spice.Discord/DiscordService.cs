@@ -14,6 +14,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static Spice.DiscordClient.Models.ChannelMessages;
 using static Spice.DiscordClient.Models.GuildEvents;
 
 namespace Spice.DiscordClient
@@ -289,6 +290,68 @@ namespace Spice.DiscordClient
             catch (Exception ex)
             {
                 _logger.LogCritical(ex, "Unknown error while removing events from cache.");
+                throw;
+            }
+        }
+
+        public async Task<ChannelMessages> GetChannelMessagesAsync(string channelId)
+        {
+            var isRatedLimitedCall = true;
+
+            if (string.IsNullOrWhiteSpace(channelId)) { throw new ArgumentNullException(nameof(channelId)); }
+
+            try
+            {
+                var cached = await _cache.Get<ChannelMessages>(channelId);
+                if (cached != null)
+                {
+                    return cached;
+                }
+
+                var result = await GetAsync($"channels/{channelId}/messages", isRatedLimitedCall);
+                if (result == null)
+                {
+                    throw new ChannelNotFoundException(channelId);
+                }
+
+                var messages = JsonConvert.DeserializeObject<IEnumerable<ChannelMessage>>(result, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.Indented
+                });
+
+                var channelMessages = new ChannelMessages { Messages = messages };
+
+                await _cache.Set(channelMessages, channelId);
+
+                return channelMessages;
+            }
+            catch (ChannelNotFoundException)
+            {
+                throw;
+            }
+            catch (RateLimitException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while getting messages.");
+                throw;
+            }
+        }
+
+        public async Task RemoveChannelMessagesFromCacheAsync(string channelId)
+        {
+            if (string.IsNullOrWhiteSpace(channelId)) { throw new ArgumentNullException(nameof(channelId)); }
+
+            try
+            {
+                await _cache.Remove<ChannelMessages>(channelId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Unknown error while removing channelMessages from cache.");
                 throw;
             }
         }

@@ -1,0 +1,17 @@
+﻿@using System.Diagnostics
+@using System.Reflection
+
+@_productVersion
+
+@code {
+    private string _productVersion;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _productVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+            StateHasChanged();
+        }
+    }
+}

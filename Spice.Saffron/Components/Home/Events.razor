@@ -1,7 +1,7 @@
 ﻿@inject ICalendarService CalendarService
 @namespace Spice.Saffron.Components
 <BSRow Align="Align.Default" Class="hompage-event-row">
-    @if (!_loading && _events != null)
+    @if (!_loading && _events != null && _events.Items.Count != 0)
     {
         <h5>@_headerName <BSBadge Color="BSColor.Primary">@_events.Items.Count</BSBadge></h5>
         <BSCol Column="12" Class="event-card">

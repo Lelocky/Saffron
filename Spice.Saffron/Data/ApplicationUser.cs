@@ -7,5 +7,6 @@ namespace Spice.Saffron.Data
         public string Nickname { get; set; }
         public string ProfileImage { get; set; }
         public DateTime? DateOfBirth { get; set; }
+        public string IngameName { get; set; }
     }
 }

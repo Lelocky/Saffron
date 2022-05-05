@@ -15,7 +15,13 @@
 <BSRow MarginBottom="Margins.Small">
     <BSLabel IsColumn="true">Birthdate</BSLabel>
     <BSCol ColumnSmall="11">
-        <BSInput InputType="InputType.Date" @bind-Value="model.DateOfBirth"/>
+        <BSInput InputType="InputType.Date" @bind-Value="model.DateOfBirth" />
+    </BSCol>
+</BSRow>
+<BSRow MarginBottom="Margins.Small">
+    <BSLabel IsColumn="true">Ingame Name</BSLabel>
+    <BSCol ColumnSmall="11">
+        <BSInput InputType="InputType.Text" @bind-Value="model.IngameName" />
     </BSCol>
 </BSRow>
 
@@ -31,6 +37,7 @@
     {
         [Required]
         public DateTime DateOfBirth { get; set; }
+        public string IngameName { get; set; }
     }
 
     private Model model = new Model();
@@ -39,12 +46,11 @@
     {
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var result = await UserService.UpdateUserDateOfBirth(authState.User.Identity.Name, model.DateOfBirth);
+        var birthDayResult = await UserService.UpdateUserDateOfBirthAsync(authState.User.Identity.Name, model.DateOfBirth);
+        var ingameNameResult = await UserService.UpdateIngameNameAsync(authState.User.Identity.Name, model.IngameName);
 
-        if (result)
-        {
-            Navigation.NavigateTo("/profile");
-        }
+        Navigation.NavigateTo("/profile");
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -61,6 +67,7 @@
                     model.DateOfBirth = (DateTime)user.DateOfBirth;
                 }
 
+                model.IngameName = user.IngameName;
                 StateHasChanged();
             }
         }

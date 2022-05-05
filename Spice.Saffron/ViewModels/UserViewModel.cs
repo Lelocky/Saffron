@@ -6,5 +6,6 @@
         public string NickName { get; set; }
         public string ProfileImage { get; set; }
         public DateTime? DateOfBirth { get; set; }
+        public string IngameName { get; set; }
     }
 }

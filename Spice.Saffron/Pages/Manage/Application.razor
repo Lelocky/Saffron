@@ -60,7 +60,7 @@
     {
         if (firstRender)
         {
-            _serverRolesViewModel = await DiscordService.GetServerRoles();
+            _serverRolesViewModel = await DiscordService.GetServerRolesAsync();
              _productVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
             StateHasChanged();
         }

@@ -4,16 +4,15 @@
     @if (!_loading && _events != null)
     {
         <h5>@_headerName <BSBadge Color="BSColor.Primary">@_events.Items.Count</BSBadge></h5>
-        <BSCol Column="12">
+        <BSCol Column="12" Class="event-card">
             @foreach (var item in _events.Items)
-            {
-                <BSCard CardType="CardType.Card">
-                    <BSCard CardType="CardType.Image" src="placeholder:250x150" alt="Card image cap" />
+            {             
+                <BSCard CardType="CardType.Card" Class="event-card">
                     <BSCard CardType="CardType.Body">
                         <BSCard CardType="CardType.Title">@item.Name</BSCard>
                         <BSCard CardType="CardType.Text">
-                            <p>@item.Description</p>
-                            <p>@item.OccurAt.</p>
+                            <p class="event-card-date">@item.OccurAt</p>
+                            <p class="event-card-description">@item.Description</p>
                         </BSCard>
                     </BSCard>
                 </BSCard>
@@ -24,7 +23,13 @@
     {
         <BSCol Column="12">
             <h5>@_headerName</h5>
-            <p>No events scheduled</p>
+            <BSCard CardType="CardType.Card" Class="event-card">
+                    <BSCard CardType="CardType.Body">
+                        <BSCard CardType="CardType.Text">
+                            <p class="event-card-description">There are currently no events scheduled. Want to create an event, use the "Create Event" feature in our Discord server.</p>
+                        </BSCard>
+                    </BSCard>
+                </BSCard>
         </BSCol>
     }
     else

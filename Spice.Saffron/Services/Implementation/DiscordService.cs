@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using AutoMapper;
+using Microsoft.Extensions.Options;
 using Spice.DiscordClient;
 using Spice.DiscordClient.Exceptions;
 using Spice.Saffron.Configuration.Options;
@@ -12,12 +13,14 @@ namespace Spice.Saffron.Services
         private readonly DiscordClient.IDiscordService _discordService;
         private readonly ILogger<DiscordService> _logger;
         private readonly DiscordGuildSettings _guildSettings;
+        private readonly IMapper _mapper;
 
-        public DiscordService(DiscordClient.IDiscordService discordService, ILogger<DiscordService> logger, IOptions<DiscordGuildSettings> options)
+        public DiscordService(DiscordClient.IDiscordService discordService, ILogger<DiscordService> logger, IOptions<DiscordGuildSettings> options, IMapper mapper)
         {
             _discordService = discordService;
             _logger = logger;
             _guildSettings = options.Value;
+            _mapper = mapper;
         }
 
         public async Task<List<Claim>> GetDiscordRolesAsClaimsAsync(string userId)
@@ -60,7 +63,7 @@ namespace Spice.Saffron.Services
             }
         }
 
-        public async Task<ServerRolesViewModel> GetServerRoles()
+        public async Task<ServerRolesViewModel> GetServerRolesAsync()
         {
             try
             {
@@ -102,6 +105,33 @@ namespace Spice.Saffron.Services
             catch (Exception ex)
             {
                 _logger.LogCritical(ex, "Unknown error while getting Discord roles.");
+                throw;
+            }
+        }
+
+        public async Task<ChannelMessagesViewModel> GetChannelMessagesAsync(string channelId)
+        {
+            try
+            {
+                var channelMessages = await _discordService.GetChannelMessagesAsync(channelId);
+                if (channelMessages != null)
+                {
+                    var viewModel = _mapper.Map<ChannelMessagesViewModel>(channelMessages);
+                    return viewModel;
+                }
+
+                return null;
+                
+            }
+            catch (ChannelNotFoundException ex)
+            {
+                _logger.LogError(ex, $"Could not find channelMessages for channelId {channelId}");
+                return null;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Unknown error while getting channelMessages.");
                 throw;
             }
         }

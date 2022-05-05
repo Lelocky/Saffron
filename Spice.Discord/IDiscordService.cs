@@ -15,5 +15,7 @@ namespace Spice.DiscordClient
         Task RemoveGuildRolesFromCacheAsync(string guildId);
         Task<GuildEvents> GetGuildEventsAsync(string guildId);
         Task RemoveGuildEventsFromCacheAsync(string guildId);
+        Task<ChannelMessages> GetChannelMessagesAsync(string channelId);
+        Task RemoveChannelMessagesFromCacheAsync(string channelId);
     }
 }

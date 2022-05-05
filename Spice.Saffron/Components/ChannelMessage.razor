@@ -1,0 +1,21 @@
+﻿@using Markdig
+<div class="channelmessage">
+    <p class="channelmessage-postedby">Posted by: @Message.Author.Username @@ <span>@Message.Timestamp</span></p>
+    <p class="channelmessage-content">@((MarkupString)_content)</p>
+</div>
+
+@code {
+    [Parameter]
+    public Spice.Saffron.ViewModels.ChannelMessagesViewModel.ChannelMessage Message { get; set; }
+    private string _content { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _content = ParseMarkdownToHtml(Message.Content);
+    }
+
+    private string ParseMarkdownToHtml(string markdown)
+    {
+        return Markdown.ToHtml(markdown);
+    }
+}

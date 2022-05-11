@@ -1,4 +1,5 @@
 ﻿@page "/calendar"
+@using Spice.Saffron.Components.Calendar
 @inject ICalendarService CalendarService
 @attribute [Authorize(Policy = "CommunityOnly")]
 
@@ -7,52 +8,14 @@
     <h2>Calendar</h2>
 </div>
 <div class="calendar-wrapper">
-    <BSAlert Color="BSColor.Primary">There will be a nice calendar here. Dumping data until then</BSAlert>
     @if (_birthdays != null)
     {
-        @foreach (var item in _birthdays.Items)
-        {
-            <BSCard CardType="CardType.Card">
-                <BSCard CardType="CardType.Image" src="placeholder:286x180" alt="Card image cap" />
-                <BSCard CardType="CardType.Body">
-                    <BSCard CardType="CardType.Title">@item.OccurAt</BSCard>
-                    <BSCard CardType="CardType.Text">
-                        Birthday of @item.Name
-                    </BSCard>
-                </BSCard>
-            </BSCard>
-        }
+        <YearOverview Items="_birthdays"></YearOverview>
 
     }
     else
     {
-        <BSProgress>
-            <BSProgressBar IsStriped="true" Max="100" Color="BSColor.Dark" Value="100" IsAnimated="true"></BSProgressBar>
-        </BSProgress>
-    }
-
-    @if (_events != null)
-    {
-        @foreach (var item in _events.Items)
-        {
-            <BSCard CardType="CardType.Card">
-                <BSCard CardType="CardType.Image" src="placeholder:286x180" alt="Card image cap" />
-                <BSCard CardType="CardType.Body">
-                    <BSCard CardType="CardType.Title">@item.Name</BSCard>
-                    <BSCard CardType="CardType.Text">
-                       <p>@item.Description</p>
-                       <p>@item.OccurAt</p>
-                    </BSCard>
-                </BSCard>
-            </BSCard>
-        }
-
-    }
-    else
-    {
-        <BSProgress>
-            <BSProgressBar IsStriped="true" Max="100" Color="BSColor.Dark" Value="100" IsAnimated="true"></BSProgressBar>
-        </BSProgress>
+       <BSSpinner/>
     }
 </div>
 
@@ -78,31 +41,4 @@
         }
     }
 
-    private List<ListData> GetListData(DateTime value)
-    {
-        List<ListData> listData = new List<ListData>();
-
-        if (_birthdays != null)
-        {
-            var birthDaysOnDate = _birthdays.Items.Where(x => x.OccurAt.Day.Equals(value.Day) && x.OccurAt.Month.Equals(value.Month)).ToList();
-
-            if (value.Month.Equals(2) && value.Day.Equals(28) && !value.IsLeapYear())
-            {
-                birthDaysOnDate.AddRange(_birthdays.Items.Where(x => x.OccurAt.Day.Equals(29) && x.OccurAt.Month.Equals(2)).ToList());
-            }
-
-            foreach (var birthdayItem in birthDaysOnDate)
-            {
-                listData.Add(new ListData { type = "warning", content = birthdayItem.Name });
-            }
-        }
-
-        return listData;
-    }
-
-    public IEnumerable<DateTime> EachDay(DateTime from, DateTime thru)
-    {
-        for (var day = from.Date; day.Date <= thru.Date; day = day.AddDays(1))
-            yield return day;
-    }
 }

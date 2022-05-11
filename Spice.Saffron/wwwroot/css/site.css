@@ -168,3 +168,21 @@ ul {
     font-size: 0.8em;
     margin-bottom:0;
 }
+
+.calendar-monthoverview-month {
+    min-height: 250px;
+    background-color: #fbfbfb;
+    padding: 10px;
+}
+
+.calendar-monthoverview-monthname
+{
+    font-size:1.3em;
+    text-align:center;
+}
+
+.calender-monthoverview-item
+{
+    font-size:0.8em;
+    margin-bottom:0;
+}

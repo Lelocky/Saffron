@@ -35,7 +35,7 @@ namespace Spice.Saffron.Services
                     {
                         if (user.DateOfBirth != null)
                         {
-                            calendarViewModel.Items.Add(new CalendarItemViewModel(user.Nickname, (DateTimeOffset)user.DateOfBirth, "Birthday"));
+                            calendarViewModel.Items.Add(new CalendarItemViewModel(string.IsNullOrWhiteSpace(user.IngameName) ? user.Nickname : user.IngameName, (DateTimeOffset)user.DateOfBirth, "Birthday"));
                         }
                     }
                 }

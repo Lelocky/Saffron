@@ -7,7 +7,7 @@
                 <div class="calendar-monthoverview-month border">
                     <p class="calendar-monthoverview-monthname">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber)</p>
                     <ul>
-                        @foreach (var item in Items.Items.Where(x => x.OccurAt.Month.Equals(monthNumber)))
+                        @foreach (var item in Items.Items.Where(x => x.OccurAt.Month.Equals(monthNumber)).OrderBy(x => x.OccurAt))
                         {
                             <li class="calender-monthoverview-item"><BSBadge Color="BSColor.Primary">@item.OccurAt.Day</BSBadge> @item.Name 🎂 </li>
                         }

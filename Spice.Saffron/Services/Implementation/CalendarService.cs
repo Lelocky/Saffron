@@ -54,11 +54,10 @@ namespace Spice.Saffron.Services
 
             try
             {
-                //var users = await _userManager.Users.Where(x => x.DateOfBirth.Value.GetIso8601WeekOfYear().Equals(DateTime.Now.GetIso8601WeekOfYear())).ToList();
                 var users = await _userManager.Users.ToListAsync();
                 if (users != null)
                 {
-                    var userbirthDaysThisWeek = users.Where(x => x.DateOfBirth.Value.GetIso8601WeekOfYear().Equals(DateTime.Now.GetIso8601WeekOfYear())).ToList();
+                    var userbirthDaysThisWeek = users.Where(x => x.DateOfBirth.HasValue && x.DateOfBirth.Value.GetIso8601WeekOfYear().Equals(DateTime.Now.GetIso8601WeekOfYear())).ToList();
                     foreach (var user in userbirthDaysThisWeek)
                     {
                         if (user.DateOfBirth != null)

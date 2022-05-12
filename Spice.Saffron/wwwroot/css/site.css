@@ -148,23 +148,35 @@ ul {
         font-weight: 800;
     }
 
-.dashboard-events .card {
+.dashboard-widget{
+    text-align:center;
+    margin-bottom:5px;
+    
+}
+.dashboard-widget .card {
     margin-bottom: 5px;
+    background-color: #fbfbfb;
 }
 
-.event-card {
+.widget-card {
     text-align: center;
+}
+
+.widget-card ul{
+    display:inline-block;
+    text-align:left;
+    margin-bottom:0;
 }
 
 .card-body{
     padding-bottom:5px;
 }
-.event-card-date {
+.widget-card-date {
     font-size: 0.8em;
     margin-bottom:5px;    
 }
 
-.event-card-description {
+.widget-card-description {
     font-size: 0.8em;
     margin-bottom:0;
 }

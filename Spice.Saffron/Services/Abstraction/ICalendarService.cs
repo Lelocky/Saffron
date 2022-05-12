@@ -6,5 +6,6 @@ namespace Spice.Saffron.Services
     {
         Task<CalendarViewModel> GetBirthdays();
         Task<CalendarViewModel> GetEvents();
+        Task<CalendarViewModel> GetThisWeeksBirthDaysAsync();
     }
 }

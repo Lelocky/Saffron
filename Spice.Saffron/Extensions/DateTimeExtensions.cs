@@ -34,6 +34,12 @@ namespace System
             return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
 
+        public static DateTime ChangeToCurrentYear(this DateTime time)
+        {
+            return time.ChangeYear(DateTime.Now.Year);
+        }
+
+
         public static DateTime ChangeYear(this DateTime dt, int newYear)
         {
             return dt.AddYears(newYear - dt.Year);

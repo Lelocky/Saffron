@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Spice.Saffron.Configuration.Options;
 using Spice.Saffron.Data;
 using Spice.Saffron.ViewModels;
+using System.Globalization;
 
 namespace Spice.Saffron.Services
 {
@@ -57,7 +58,7 @@ namespace Spice.Saffron.Services
                 var users = await _userManager.Users.ToListAsync();
                 if (users != null)
                 {
-                    var userbirthDaysThisWeek = users.Where(x => x.DateOfBirth.HasValue && x.DateOfBirth.Value.GetIso8601WeekOfYear().Equals(DateTime.Now.GetIso8601WeekOfYear())).ToList();
+                    var userbirthDaysThisWeek = users.Where(x => x.DateOfBirth.HasValue && x.DateOfBirth.Value.ChangeToCurrentYear().GetIso8601WeekOfYear().Equals(DateTime.Now.GetIso8601WeekOfYear())).ToList();
                     foreach (var user in userbirthDaysThisWeek)
                     {
                         if (user.DateOfBirth != null)

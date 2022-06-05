@@ -224,6 +224,27 @@ namespace Spice.DiscordClient
             return jsonResult;
         }
 
+        private async Task<string> PostAsync(string requestUri, object objectToPost)
+        {
+            if (string.IsNullOrEmpty(requestUri)) { throw new ArgumentNullException(nameof(requestUri)); }
+            if (objectToPost == null) { throw new ArgumentNullException(nameof(objectToPost)); }
+
+            var json = JsonConvert.SerializeObject(objectToPost, Formatting.Indented);
+            var buffer = Encoding.UTF8.GetBytes(json);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+            var httpResult = await _httpClient.PostAsync(requestUri, byteContent);
+
+            string jsonResult = null;
+            if (httpResult.IsSuccessStatusCode)
+            {
+                jsonResult = await httpResult.Content.ReadAsStringAsync();
+            }
+
+            return jsonResult;
+        }
+
         private void UpdateRateLimitInformation(HttpResponseHeaders headers)
         {
             _rateLimitInformation.Bucket = headers.GetRateLimitBucket();
@@ -337,6 +358,29 @@ namespace Spice.DiscordClient
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception while getting messages.");
+                throw;
+            }
+        }
+
+        public async Task PostMessagesAsync(string channelId, CreateMessage message)
+        {
+            if (string.IsNullOrWhiteSpace(channelId)) { throw new ArgumentNullException(nameof(channelId)); }
+
+            try
+            {
+                var result = await PostAsync($"channels/{channelId}/messages", message);
+                if (result == null)
+                {
+                    throw new Exception(); //Make exception
+                }
+            }
+            catch (RateLimitException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while posting messages.");
                 throw;
             }
         }

@@ -17,5 +17,6 @@ namespace Spice.DiscordClient
         Task RemoveGuildEventsFromCacheAsync(string guildId);
         Task<ChannelMessages> GetChannelMessagesAsync(string channelId);
         Task RemoveChannelMessagesFromCacheAsync(string channelId);
+        Task PostMessagesAsync(string channelId, CreateMessage message);
     }
 }

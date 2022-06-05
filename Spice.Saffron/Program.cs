@@ -9,6 +9,7 @@ using Spice.Saffron.Configuration.Options;
 using Spice.Saffron.Data;
 using Spice.Saffron.Factories;
 using Spice.Saffron.Services;
+using Spice.Saffron.Services.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,14 @@ builder.Services.AddSingleton<IDiscordService, DiscordService>();
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>,AdditionalUserClaimsPrincipalFactory>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddScoped<IBirthdayAnnouncementService, BirthdayAnnouncementService>();
+
+builder.Services.AddCronJob<BirthdayAnnouncementJob>(c =>
+{
+    //c.CronExpression = @"0 0 * * MON";
+    c.CronExpression = builder.Configuration.GetSection("DiscordGuild:BirthdayAnnouncementCronExpression").Value;
+    c.TimeZoneInfo = TimeZoneInfo.Utc;
+});
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();

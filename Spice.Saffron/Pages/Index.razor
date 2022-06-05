@@ -1,0 +1,44 @@
+﻿@page "/"
+@layout HomePageLayout
+@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <DashboardRedirect></DashboardRedirect>
+    </Authorized>
+    <NotAuthorized>
+        <BSContainer Container="Container.Fluid" Class="homepage">
+            <BSRow Align="Align.Default" Class="homepage-row">
+                <BSCol Column="6" Class="homepage-image-col">
+                    <div class="homepage-image-wrapper">
+                    </div>
+                </BSCol>
+                <BSCol Column="6">              
+                    <div class="homepage-content">       
+                        <div class=homepage-welcome>
+                             <div class=homepage-logo>
+                                 <img src="images/logo.svg" alt="logo">
+                                 </div>
+                            <h1>Welcome to Saffron</h1>
+                            <p>Please login to continue.</p>
+                            <BSButton Color="BSColor.Dark" Size="Size.ExtraExtraLarge" OnClick="OnRedirectToLogin">Login with discord</BSButton>
+                        </div>
+                        <div class="homepage-version">
+                            <p><AppVersion/></p>
+                        </div>
+                    </div>
+                </BSCol>
+            </BSRow>
+        </BSContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+@code {
+    private void OnRedirectToLogin()
+    {
+        NavigationManager.NavigateTo("Identity/Account/Login", true);
+    }
+}
+

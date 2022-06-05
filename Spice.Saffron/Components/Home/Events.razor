@@ -1,0 +1,58 @@
+﻿@inject ICalendarService CalendarService
+@namespace Spice.Saffron.Components
+<BSRow Align="Align.Default" Class="hompage-widget-row">
+    @if (!_loading && _events != null && _events.Items.Count != 0)
+    {
+        <h5>@_headerName <BSBadge Color="BSColor.Primary">@_events.Items.Count</BSBadge></h5>
+        <BSCol Column="12" Class="widget-card">
+            @foreach (var item in _events.Items)
+            {             
+                <BSCard CardType="CardType.Card" Class="widget-card">
+                    <BSCard CardType="CardType.Body">
+                        <BSCard CardType="CardType.Title">@item.Name</BSCard>
+                        <BSCard CardType="CardType.Text">
+                            <p class="widget-card-date">@item.OccurAt</p>
+                            <p class="widget-card-description">@item.Description</p>
+                        </BSCard>
+                    </BSCard>
+                </BSCard>
+            }
+        </BSCol>
+    }
+    else if (!_loading)
+    {
+        <BSCol Column="12">
+            <h5>@_headerName</h5>
+            <BSCard CardType="CardType.Card" Class="widget-card">
+                    <BSCard CardType="CardType.Body">
+                        <BSCard CardType="CardType.Text">
+                            <p class="widget-card-description">There are currently no events scheduled. Want to create an event, use the "Create Event" feature in our Discord server.</p>
+                        </BSCard>
+                    </BSCard>
+                </BSCard>
+        </BSCol>
+    }
+    else
+    {
+        <BSCol Column="12">
+            <h5>@_headerName</h5>
+            <BSSpinner/>
+        </BSCol>
+    }
+</BSRow>
+
+@code {
+    private CalendarViewModel _events { get; set; }
+    private bool _loading { get; set; } = true;
+    private string _headerName { get; set; } = "Scheduled events";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _events = await CalendarService.GetEvents();
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+}

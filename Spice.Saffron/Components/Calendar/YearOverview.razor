@@ -1,0 +1,25 @@
+﻿<BSContainer Container="Container.Fluid" Class="calendar-monthoverview">
+    <div class="row row-cols-2 row-cols-sm-2 row-cols-xs-2 row-cols-lg-4 g-2 g-lg-3">
+        @for (int i = 1; i < 13; i++)
+        {
+            var monthNumber = i;
+            <div class="col">
+                <div class="calendar-monthoverview-month border">
+                    <p class="calendar-monthoverview-monthname">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber)</p>
+                    <ul>
+                        @foreach (var item in Items.Items.Where(x => x.OccurAt.Month.Equals(monthNumber)).OrderBy(x => x.OccurAt))
+                        {
+                            <li class="calender-monthoverview-item"><BSBadge Color="BSColor.Primary">@item.OccurAt.Day</BSBadge> @item.Name 🎂 </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+</BSContainer>
+@code {
+    [Parameter]
+    public CalendarViewModel Items { get; set; }
+
+    //Gotta rework that CalendarViewModel
+}

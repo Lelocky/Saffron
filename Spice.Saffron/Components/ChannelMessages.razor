@@ -1,0 +1,34 @@
+﻿@inject IDiscordService DiscordService
+
+@if (!_loading && _channelMessages != null)
+{
+    @foreach(var message in _channelMessages.Messages.Take(Limit))
+    {
+        <ChannelMessage Message="message"/>
+    }
+}
+else
+{
+    <BSCol Column="12">
+        <BSSpinner/>
+    </BSCol>
+}
+@code {
+    [Parameter]
+    public string ChannelId { get; set; }
+    [Parameter]
+    public int Limit { get; set; }
+    private ChannelMessagesViewModel _channelMessages { get; set; }
+    private bool _loading { get; set; } = true;
+    private string _headerName { get; set; } = "ChannelName";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _channelMessages = await DiscordService.GetChannelMessagesAsync(ChannelId);
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,66 @@
+﻿@namespace Spice.Saffron.Components
+@inject ICalendarService CalendarService
+
+<BSRow Align="Align.Default" Class="hompage-widget-row">
+    @if (!_loading && _birthdays != null && _birthdays.Items.Count != 0)
+    {
+        <h5>@_headerName <BSBadge Color="BSColor.Primary">@_birthdays.Items.Count</BSBadge></h5>
+        <BSCol Column="12">
+            <BSCard CardType="CardType.Card" Class="widget-card">
+                <BSCard CardType="CardType.Body">
+                    <BSCard CardType="CardType.Text">
+                        <ul>
+                            @foreach (var item in _birthdays.Items.OrderBy(x => x.OccurAt))
+                            {
+                                <li class="calender-monthoverview-item"><BSBadge Color="BSColor.Primary">@GetDayString(@item.OccurAt)</BSBadge> @item.Name</li>
+                            }
+                        </ul>
+                    </BSCard>
+                </BSCard>
+            </BSCard>
+        </BSCol>
+    }
+    else if (!_loading)
+    {
+        <BSCol Column="12">
+            <h5>@_headerName</h5>
+            <BSCard CardType="CardType.Card" Class="widget-card">
+                <BSCard CardType="CardType.Body">
+                    <BSCard CardType="CardType.Text">
+                        <p class="widget-card-description">No birthdays upcoming for this week.</p>
+                    </BSCard>
+                </BSCard>
+            </BSCard>
+        </BSCol>
+    }
+    else
+    {
+        <BSCol Column="12">
+            <h5>@_headerName</h5>
+            <BSSpinner />
+        </BSCol>
+    }
+</BSRow>
+
+@code {
+    private CalendarViewModel _birthdays { get; set; }
+    private bool _loading { get; set; } = true;
+    private string _headerName { get; set; } = "This weeks birthdays";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _birthdays = await CalendarService.GetThisWeeksBirthDaysAsync();
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetDayString(DateTimeOffset birthdate)
+    {
+        var newDate = birthdate.DateTime.ChangeYear(DateTime.Now.Year);
+        return $"{newDate.DayOfWeek}-{newDate.Day}";
+       
+    }
+}

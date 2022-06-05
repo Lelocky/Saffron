@@ -1,0 +1,88 @@
+﻿@page "/users"
+@attribute [Authorize(Policy = "ManagementOnly")]
+@inject IUserService UserService
+
+@*<Divider Orientation="left">User Statistics</Divider>
+    <Row Gutter="16">
+    <Col Span="12">
+    <Statistic Title="Total Users" Value="@_totalUsers" />
+    </Col>
+    </Row>
+
+    <Divider Orientation="left">Users</Divider>
+
+    @if (_users != null)
+    {
+    <Table TItem="UserViewModel" DataSource="@_users">
+    <Column @bind-Field="@context.NickName"></Column>
+    <Column @bind-Field="@context.DateOfBirth"></Column>
+    <ActionColumn Title="Action">
+    <Space Size=@("middle")>
+    <SpaceItem>
+    <a>Delete</a>
+    </SpaceItem>
+    </Space>
+    </ActionColumn>
+    </Table>
+    }
+    else
+    {
+    <Skeleton Active="true"></Skeleton>
+    }*@
+<PageTitle>Users</PageTitle>
+<div class=page-header>
+    <h2>Users</h2>
+
+</div>
+@if (_users != null)
+{
+    <BSTable IsBorderLess="true" IsCaptionTop="true" IsStriped="true">
+        <caption>List of users</caption>
+        <BSTHead>
+            <BSTR>
+                <BSTD>Nickname</BSTD>
+                <BSTD>IngameName</BSTD>
+                <BSTD>DateOfBirth</BSTD>
+                <BSTD>Actions</BSTD>
+            </BSTR>
+        </BSTHead>
+        <BSTBody>
+            @foreach (var user in _users)
+            {
+                <BSTR>
+                    <BSTD>@user.NickName</BSTD>
+                    <BSTD>@user.IngameName</BSTD>
+                    <BSTD>@user.DateOfBirth</BSTD>
+                    <BSTD></BSTD>
+                </BSTR>
+            }
+        </BSTBody>
+        <BSTFoot>
+            <BSTR>
+                <BSTD ColSpan="4">@_totalUsers users found</BSTD>
+            </BSTR>
+
+        </BSTFoot>
+    </BSTable>
+}
+else
+{
+    <BSSpinner/>
+}
+
+
+@code {
+    private List<UserViewModel> _users;
+    private int _totalUsers = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _users = await UserService.GetUsersAsync();
+            _totalUsers = _users.Count();
+            StateHasChanged();
+        }
+    }
+}
+

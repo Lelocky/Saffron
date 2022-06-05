@@ -1,0 +1,120 @@
+﻿@page "/profile"
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@inject IUserService UserService
+
+<PageTitle>@_title</PageTitle>
+<div class=page-header>
+    <h2>Profile</h2>
+
+</div>
+<BSAccordion>
+    <AuthorizeView>
+        <Authorized>
+            <BSAccordionItem DefaultShown="true" AlwaysOpen="true">
+                <Header>@_title</Header>
+                <Content>
+                    <UserInformation OnRedirectToEditProfile=@RedirectToEditProfile
+                                     OnRedirectToLogout=@RedirectToLogout
+                                     User=@_user
+                                     Claims=@_claims.Where(x => x.Type.Equals(ClaimTypes.Role))>
+                    </UserInformation>
+                </Content>
+            </BSAccordionItem>
+        </Authorized>
+        <NotAuthorized>
+            <LoginRedirect />
+        </NotAuthorized>
+    </AuthorizeView>
+    <AuthorizeView Policy="ManagementOnly">
+        <Authorized>
+            <BSAccordionItem DefaultShown="true" AlwaysOpen="true">
+                <Header>Claims</Header>
+                <Content>
+                    <UserClaims Claims=@_claims>
+                    </UserClaims>
+                </Content>
+            </BSAccordionItem>
+        </Authorized>
+    </AuthorizeView>
+    <AuthorizeView>
+        <Authorized>
+            <BSAccordionItem DefaultShown="false">
+                <Header>Delete account</Header>
+                <Content>
+                    <DeleteAccount OnDeleteAccount=@DeleteAccount></DeleteAccount>
+                </Content>
+            </BSAccordionItem>
+           
+        </Authorized>
+    </AuthorizeView>
+</BSAccordion>
+<style>
+    .gutter-box {
+        padding: 8px 0;
+        background: #00a0e9;
+    }
+
+    .note {
+        font-size: 10px;
+    }
+</style>
+
+
+@code {
+    private string _title = "User";
+    private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+    private UserViewModel _user;
+    private string _userName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            _title = user.GetNickname();
+            _claims = user.Claims;
+            _userName = user.Identity.Name;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            if (authState.User.Identity.IsAuthenticated)
+            {
+                _user = await UserService.GetUserAsync(_userName);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void RedirectToEditProfile()
+    {
+        Navigation.NavigateTo("/EditProfile");
+    }
+
+    private void RedirectToLogout()
+    {
+        Navigation.NavigateTo("/Identity/Account/Logout", true);
+    }
+
+    private async Task DeleteAccount()
+    {
+        var success = await UserService.DeleteUserDataAsync(_userName);
+        if (success)
+        {
+            Navigation.NavigateTo("/Identity/Account/Logout", true);
+        }
+        else
+        {
+            Navigation.NavigateTo("/Error", true);
+        }
+    }
+}

@@ -1,0 +1,81 @@
+﻿@using System.Security.Claims
+@namespace Spice.Saffron.Components
+
+
+@if (User != null)
+{
+    <BSContainer>
+        <div class="user-profile">
+            <h4>General</h4>
+            <p>This information is saved in the database.</p>
+            <BSRow MarginBottom="Margins.Small">
+                <BSLabel IsColumn="true">Nickname</BSLabel>
+                <BSCol ColumnSmall="10">
+                    <BSInput InputType="InputType.Text" Value="@User.NickName" IsPlainText="true" />
+                </BSCol>
+            </BSRow>
+             <BSRow MarginBottom="Margins.Small">
+                <BSLabel IsColumn="true">Ingame Name</BSLabel>
+                <BSCol ColumnSmall="10">
+                    <BSInput InputType="InputType.Text" Value="@User.IngameName" IsPlainText="true" />
+                </BSCol>
+            </BSRow>
+            <BSRow MarginBottom="Margins.Small">
+                <BSLabel IsColumn="true">DiscordId</BSLabel>
+                <BSCol ColumnSmall="10">
+                    <BSInput InputType="InputType.Text" Value="@User.UserName" IsPlainText="true" />
+                </BSCol>
+            </BSRow>
+            <BSRow MarginBottom="Margins.Small">
+                <BSLabel IsColumn="true">ProfileImage</BSLabel>
+                <BSCol ColumnSmall="10">
+                    <BSInput InputType="InputType.Text" Value="@User.ProfileImage" IsPlainText="true" />
+                </BSCol>
+            </BSRow>
+            <BSRow MarginBottom="Margins.Small">
+                <BSLabel IsColumn="true">Birthdate</BSLabel>
+                <BSCol ColumnSmall="10">
+                    @if (User.DateOfBirth != null)
+                    {
+                        <BSInput InputType="InputType.Text" Value="@User.DateOfBirth" IsPlainText="true" />
+                    }
+                </BSCol>
+            </BSRow>
+            <div class="roles">
+                <h4>Roles</h4>
+                <p>Your roles on our Discord Server.</p>
+                @if (Claims.Count() > 0)
+                {
+                    <ul>
+                        @foreach (var claim in Claims)
+                        {
+                            <li>@claim.Value</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>None</p>
+                }
+            </div>
+        </div>
+
+        <BSButton Color="BSColor.Dark" OnClick="OnRedirectToEditProfile">Change profile</BSButton>
+    </BSContainer>
+}
+else
+{
+    <BSSpinner/>
+}
+
+
+@code {
+    [Parameter]
+    public EventCallback OnRedirectToEditProfile { get; set; }
+    [Parameter]
+    public EventCallback OnRedirectToLogout { get; set; }
+    [Parameter]
+    public UserViewModel User { get; set; }
+    [Parameter]
+    public IEnumerable<Claim> Claims { get; set; }
+}

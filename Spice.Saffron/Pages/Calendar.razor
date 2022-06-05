@@ -1,0 +1,44 @@
+﻿@page "/calendar"
+@using Spice.Saffron.Components.Calendar
+@inject ICalendarService CalendarService
+@attribute [Authorize(Policy = "CommunityOnly")]
+
+<PageTitle>Calendar</PageTitle>
+<div class=page-header>
+    <h2>Calendar</h2>
+</div>
+<div class="calendar-wrapper">
+    @if (_birthdays != null)
+    {
+        <YearOverview Items="_birthdays"></YearOverview>
+
+    }
+    else
+    {
+       <BSSpinner/>
+    }
+</div>
+
+@code
+{
+    private CalendarViewModel _birthdays { get; set; }
+    private CalendarViewModel _events { get; set; }
+
+
+    class ListData
+    {
+        public string type;
+        public string content;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _birthdays = await CalendarService.GetBirthdays();
+            _events = await CalendarService.GetEvents();
+            StateHasChanged();
+        }
+    }
+
+}

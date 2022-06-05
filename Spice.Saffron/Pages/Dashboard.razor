@@ -1,0 +1,73 @@
+﻿@page "/dashboard"
+@attribute [Authorize(Policy = "CommunityOnly")]
+
+<BSContainer>
+    <BSRow Align="Align.Default">
+        <BSCol ColumnMedium="8">
+            <div class="dashboard-welcome">
+                <h2>Welcome to Saffron</h2>
+                <div class=dashboard-welcome-banner>
+                    <BSImage Source="images/saffron-banner-1.jpg" IsFluid="true" />
+                </div>
+            </div>
+            <div class=dashboard-content>
+                <div class="dashboard-saffron-latest">
+                    <h4>Latest from Saffron</h4>
+                    <div class="dashboard-saffron-latest-content">
+                        <p>
+                            Over the last couple months we have slowly been working on a little project named Saffron. What is Saffron? Well let's check Wikipedia: <blockquote cite="https://en.wikipedia.org/wiki/Saffron">
+                                "Saffron (/ˈsæfrən, -rɒn/)[1] is a spice derived from the flower of Crocus sativus, commonly known as the "saffron crocus"."
+                            </blockquote>
+                            Cool story bro, but what is this weird website thing?
+                        </p>
+                        <p>
+                            A couple months ago, we started talking about a birthday bot. Instead of just using something that already exists, I decided to take the long road and create something myself.
+                            So here we are, months later, with this webapplication named after this very expensive spice (see what I did there :D).
+                        </p>
+                        <p>
+                            Saffron is a hub for our members and friends. While its functionalties are pretty slim for now, we might add new fun stuff later on.
+                            For now the following is available:
+                            <ol>
+                                <li>Add your birthday (Click on your name in the header to add it or click <a href="/EditProfile">here</a>).</li>
+                                <li>Check everyone's birthdays on the calendar.</li>
+                                <li>Automatic weekly birthdays announcements in the #general channel on Discord.</li>
+                                <li>View events that are created through the Events feature on Discord.</li>
+                            </ol>
+                        </p>
+                        <p>Don't feel obligated to use Saffron if you don't want to. Privacy is an important topic and I understand it if you don't feel like sharing your birthday with everyone. I took some steps to maybe lower the barrier to share.</p>
+                        <ol>
+                            <li>Your birthyear will not be saved (When saving it will be changed to 1972 before it's stored).</li>
+                            <li>Only people with access to our Discord server are able to view your birthday and birthmonth.</li>
+                            <li>Your profile page will show the data that is stored in our database. All the other Data is retrieved from Discord (roles, etc).</li>
+                            <li>You can delete your account and data from your profile page.</li> 
+                            <li>No weird third party cookie bullshit.</li>
+                            <li>For transparency: The server is located in Germany.</li>
+                        </ol>
+                        <p>I learned a lot from developing Saffron, and I hope you guys like it. Feel free to message me, or any of the Officers, if you have any questions. Got any fun ideas, lets us know!</p>
+                        <p>For the nerds. Source code can be found at <a href="https://github.com/Lelocky/Saffron">GitHub</a>. Found anything that's incorrect? Let me know or make a pull request.</p>
+                        <p>Greetings, Lelocky</p>
+                        @*Yes this message is not saved in a DB. While would i do that. Yes im lazy.*@
+                    </div>
+                </div>
+                <div class="dashboard-announcements-latest">
+                    <h4>Latest from #announcements</h4>
+                    <ChannelMessages ChannelId="456093980430696449" Limit="1" />
+                </div>
+            </div>
+        </BSCol>
+        <BSCol ColumnMedium="4">
+            <div class="dashboard-widget">
+                <Events></Events>
+            </div>
+            <div class="dashboard-widget">
+                <BirthdayWidget></BirthdayWidget>
+            </div>
+        </BSCol>
+    </BSRow>
+</BSContainer>
+
+
+
+@code {
+
+}

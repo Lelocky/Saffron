@@ -1,0 +1,101 @@
+﻿@page "/manage/application"
+@using System.Diagnostics
+@using System.Reflection
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@inject IDiscordService DiscordService
+@inject IBirthdayAnnouncementService BirthdayAnnouncementService
+@attribute [Authorize(Policy = "ManagementOnly")]
+
+<PageTitle>Manage Application</PageTitle>
+<div class=page-header>
+    <h2>Manage Application</h2>
+</div>
+
+<BSAccordion>
+    <BSAccordionItem DefaultShown="false" AlwaysOpen="false">
+        <Header>Roles</Header>
+        <Content>
+            @if (_serverRolesViewModel != null)
+            {
+                <h4>Server Roles</h4>
+                <div class="server-roles-details-overview">
+                    <ul>
+                        @foreach (var roles in _serverRolesViewModel.Roles)
+                        {
+                            <li>@roles.Name</li>
+                        }
+                    </ul>
+                </div>
+                <div class="server-roles-cache-management">
+                    <ul>
+                        <li>Retrieved from cache: @_serverRolesViewModel.RetrievedFromCache</li>
+                        <li>Cached at: @_serverRolesViewModel.CachedAt</li>
+                    </ul>
+                    <BSButton Color="BSColor.Dark" OnClick="OnClearServerRolesCache">Clear cache | Not working yet!</BSButton>
+                </div>
+            }
+            else
+            {
+                <BSSpinner />
+            }
+        </Content>
+    </BSAccordionItem>
+    <BSAccordionItem DefaultShown="false" AlwaysOpen="false">
+        <Header>Birthday announcements</Header>
+        <Content>
+            <p>Enabled: @BirthdayAnnouncementService.IsEnabled</p>
+            <p>ChannelId: @BirthdayAnnouncementService.ChannelId</p>
+            <p>Cron Expression: @BirthdayAnnouncementService.CronExpression</p>
+            <p>Next Occurrence: @_nextAnnouncementOccurrence</p>
+            <BSButton Color="BSColor.Danger" OnClick="OnSendBirthdayAnnouncements">Force Post</BSButton>
+            <BSAlert Color="BSColor.Danger" Heading="4">
+                <Header>Be careful!</Header>
+                <Content>
+                    <p>This message will be posted in the channel above. Spamming the button will obviously spam the channel. Not something we want to do.</p>
+                    <p>Zant behave!</p>
+                    <hr />
+                    <p>If <strong>Enabled</strong> is set to false. Force post will also not post.</p>
+                </Content>
+            </BSAlert>
+        </Content>
+    </BSAccordionItem>
+    <BSAccordionItem DefaultShown="false" AlwaysOpen="false">
+        <Header>App Info</Header>
+        <Content>
+            <ul>
+                <li>Version: @_productVersion</li>
+                <li>DateTime: @DateTime.Now</li>
+            </ul>
+        </Content>
+    </BSAccordionItem>
+</BSAccordion>
+
+@code {
+    private string _productVersion;
+    private ServerRolesViewModel _serverRolesViewModel;
+    private DateTimeOffset? _nextAnnouncementOccurrence;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _serverRolesViewModel = await DiscordService.GetServerRolesAsync();
+            _productVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+            _nextAnnouncementOccurrence = Cronos.CronExpression.Parse(BirthdayAnnouncementService.CronExpression).GetNextOccurrence(DateTimeOffset.Now, TimeZoneInfo.Utc);
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnClearServerRolesCache()
+    {
+
+    }
+
+    private async Task OnSendBirthdayAnnouncements()
+    {
+        await BirthdayAnnouncementService.AnnounceAsync();
+    }
+}
+

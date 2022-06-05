@@ -1,0 +1,46 @@
+﻿@namespace Spice.Saffron.Components
+
+<h3 class=text-danger>Danger zone!</h3>
+<p>Don't want us to store your data anymore? Click the "Delete account" button below and we will yeet it.</p>
+<BSButton Color="BSColor.Danger" Target="modal1">Delete account</BSButton>
+
+
+<BSModal DataId="modal1">
+    <Header>Delete account</Header>
+    <Content>@_modalText</Content>
+    <Footer Context="modal">
+        <BSButton MarginStart="Margins.Auto" Color="BSColor.Secondary" @onclick="modal.HideAsync">Close</BSButton>
+        <BSButton Color="BSColor.Primary" OnClick="DeleteData">Delete account</BSButton>
+    </Footer>
+</BSModal>
+
+
+
+@code {
+    [Parameter]
+    public EventCallback OnDeleteAccount { get; set; }
+
+    private bool _showModal = false;
+    private bool _confirmLoading = false;
+    private string _modalText = "Are you sure you want to delete your account? This will delete all your data.";
+
+    private void ShowDeleteAccountConfirmation()
+    {
+        _showModal = true;
+    }
+
+
+    private async Task DeleteData(MouseEventArgs e)
+    {
+        _modalText = "Yeeting data...";
+        _confirmLoading = true;
+        StateHasChanged();
+        await OnDeleteAccount.InvokeAsync();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _showModal = false;
+    }
+}
+

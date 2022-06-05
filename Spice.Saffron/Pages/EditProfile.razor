@@ -1,0 +1,75 @@
+﻿@page "/editprofile"
+@using System;
+@using System.ComponentModel.DataAnnotations;
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@inject IUserService UserService
+@attribute [Authorize]
+
+<PageTitle>@_title</PageTitle>
+<div class=page-header>
+    <h2>Edit Profile</h2>
+</div>
+<BSAlert Color="BSColor.Primary">Your birth year will be changed to 1972 when saved. Your age will not be stored.</BSAlert>
+<BSRow MarginBottom="Margins.Small">
+    <BSLabel IsColumn="true">Birthdate</BSLabel>
+    <BSCol ColumnSmall="11">
+        <BSInput InputType="InputType.Date" @bind-Value="model.DateOfBirth" />
+    </BSCol>
+</BSRow>
+<BSRow MarginBottom="Margins.Small">
+    <BSLabel IsColumn="true">Ingame Name</BSLabel>
+    <BSCol ColumnSmall="11">
+        <BSInput InputType="InputType.Text" @bind-Value="model.IngameName" />
+    </BSCol>
+</BSRow>
+
+<BSButton Color="BSColor.Dark" OnClick="OnSaveChanges">Save changes</BSButton>
+
+
+
+@code {
+    private string _title = "Profile";
+    private string _userName { get; set; }
+
+    public class Model
+    {
+        [Required]
+        public DateTime DateOfBirth { get; set; }
+        public string IngameName { get; set; }
+    }
+
+    private Model model = new Model();
+
+    private async Task OnSaveChanges()
+    {
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var birthDayResult = await UserService.UpdateUserDateOfBirthAsync(authState.User.Identity.Name, model.DateOfBirth);
+        var ingameNameResult = await UserService.UpdateIngameNameAsync(authState.User.Identity.Name, model.IngameName);
+
+        Navigation.NavigateTo("/profile");
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            if (authState.User.Identity.IsAuthenticated)
+            {
+                var user = await UserService.GetUserAsync(authState.User.Identity.Name);
+                if (user.DateOfBirth != null)
+                {
+                    model.DateOfBirth = (DateTime)user.DateOfBirth;
+                }
+
+                model.IngameName = user.IngameName;
+                StateHasChanged();
+            }
+        }
+    }
+} 

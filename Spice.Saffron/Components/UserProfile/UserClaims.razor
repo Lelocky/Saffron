@@ -1,0 +1,24 @@
+﻿@using System.Security.Claims
+@namespace Spice.Saffron.Components
+
+        @if (Claims != null)
+            {
+                @if (Claims.Count() > 0)
+                {
+                <ul>
+                        @foreach (var claim in Claims)
+                        {
+                        <li>@claim.Type: @claim.Value</li>
+                        }
+                </ul>
+                }
+            }
+            else
+            {
+            <p>Loading...</p>
+            }
+
+@code {
+    [Parameter]
+    public IEnumerable<Claim> Claims { get; set; }
+}

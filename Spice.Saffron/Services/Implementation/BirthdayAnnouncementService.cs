@@ -43,7 +43,7 @@ namespace Spice.Saffron.Services
                     {
                         fields.Add(new DiscordClient.Models.CreateMessage.Field
                         {
-                            Name = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(item.OccurAt.DayOfWeek),
+                            Name = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(item.OccurAt.DateTime.ChangeToCurrentYear().DayOfWeek),
                             Value = item.Name
                         });
 

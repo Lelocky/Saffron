@@ -63,7 +63,7 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("ManagementOnly", policy => policy.RequireRole("Officer", "Leader"));
+    options.AddPolicy("ManagementOnly", policy => policy.RequireRole("Officer", "Leader", "Advisor"));
     options.AddPolicy("MemberOnly", policy => policy.RequireRole("Member", "Coconut Farmer", "Founder", "Officer", "Leader"));
     options.AddPolicy("CommunityOnly", policy => policy.RequireRole("Member", "Coconut Farmer", "Founder", "Officer", "Leader", "Company Friend"));
 });

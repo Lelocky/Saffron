@@ -29,17 +29,15 @@ namespace Spice.Saffron.Services
 
             try
             {
-                var users = await _userManager.Users.ToListAsync();
-                if (users != null)
-                {
-                    foreach (var user in users)
-                    {
-                        if (user.DateOfBirth != null)
-                        {
-                            calendarViewModel.Items.Add(new CalendarItemViewModel(string.IsNullOrWhiteSpace(user.IngameName) ? user.Nickname : user.IngameName, (DateTimeOffset)user.DateOfBirth, "Birthday"));
-                        }
-                    }
-                }
+                var birthdayItems = await _userManager.Users
+                    .Where(user => user.DateOfBirth != null)
+                    .Select(user => new CalendarItemViewModel(
+                        string.IsNullOrWhiteSpace(user.IngameName) ? user.Nickname : user.IngameName,
+                        (DateTimeOffset)user.DateOfBirth,
+                        "Birthday"))
+                    .ToListAsync();
+
+                calendarViewModel.Items.AddRange(birthdayItems);
             }
             catch (Exception ex)
             {
@@ -55,17 +53,24 @@ namespace Spice.Saffron.Services
 
             try
             {
-                var users = await _userManager.Users.ToListAsync();
-                if (users != null)
+                // Load only users with birthdays from database
+                var users = await _userManager.Users
+                    .Where(x => x.DateOfBirth.HasValue)
+                    .Select(u => new { u.DateOfBirth, u.Nickname, u.IngameName })
+                    .ToListAsync();
+
+                // Filter for this week's birthdays in memory (cannot be translated to SQL efficiently)
+                var currentWeek = DateTime.Now.GetIso8601WeekOfYear();
+                var userbirthDaysThisWeek = users
+                    .Where(x => x.DateOfBirth.Value.ChangeToCurrentYear().GetIso8601WeekOfYear().Equals(currentWeek))
+                    .ToList();
+
+                foreach (var user in userbirthDaysThisWeek)
                 {
-                    var userbirthDaysThisWeek = users.Where(x => x.DateOfBirth.HasValue && x.DateOfBirth.Value.ChangeToCurrentYear().GetIso8601WeekOfYear().Equals(DateTime.Now.GetIso8601WeekOfYear())).ToList();
-                    foreach (var user in userbirthDaysThisWeek)
-                    {
-                        if (user.DateOfBirth != null)
-                        {
-                            calendarViewModel.Items.Add(new CalendarItemViewModel(string.IsNullOrWhiteSpace(user.IngameName) ? user.Nickname : user.IngameName, (DateTimeOffset)user.DateOfBirth, "Birthday"));
-                        }
-                    }
+                    calendarViewModel.Items.Add(new CalendarItemViewModel(
+                        string.IsNullOrWhiteSpace(user.IngameName) ? user.Nickname : user.IngameName,
+                        (DateTimeOffset)user.DateOfBirth,
+                        "Birthday"));
                 }
             }
             catch (Exception ex)

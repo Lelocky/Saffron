@@ -230,11 +230,9 @@ namespace Spice.DiscordClient
             if (objectToPost == null) { throw new ArgumentNullException(nameof(objectToPost)); }
 
             var json = JsonConvert.SerializeObject(objectToPost, Formatting.Indented);
-            var buffer = Encoding.UTF8.GetBytes(json);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var httpResult = await _httpClient.PostAsync(requestUri, byteContent);
+            var httpResult = await _httpClient.PostAsync(requestUri, stringContent);
 
             string jsonResult = null;
             if (httpResult.IsSuccessStatusCode)

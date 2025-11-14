@@ -47,14 +47,10 @@
     private bool _loading { get; set; } = true;
     private string _headerName { get; set; } = "This weeks birthdays";
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
-        {
-            _birthdays = await CalendarService.GetThisWeeksBirthDaysAsync();
-            _loading = false;
-            StateHasChanged();
-        }
+        _birthdays = await CalendarService.GetThisWeeksBirthDaysAsync();
+        _loading = false;
     }
 
     private string GetDayString(DateTimeOffset birthdate)

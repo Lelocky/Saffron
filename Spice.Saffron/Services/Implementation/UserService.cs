@@ -77,31 +77,25 @@ namespace Spice.Saffron.Services
 
         public async Task<List<UserViewModel>> GetUsersAsync()
         {
-            var userViewModels = new List<UserViewModel>();
-
             try
             {
-                var users = await _userManager.Users.ToListAsync();
-                if (users != null)
-                {
-                    foreach (var user in users)
+                var userViewModels = await _userManager.Users
+                    .Select(user => new UserViewModel
                     {
-                        userViewModels.Add(new UserViewModel
-                        {
-                            NickName = user.Nickname,
-                            DateOfBirth = user.DateOfBirth,
-                            ProfileImage = user.ProfileImage,
-                            IngameName = user.IngameName,
-                        });
-                    }
-                }
+                        NickName = user.Nickname,
+                        DateOfBirth = user.DateOfBirth,
+                        ProfileImage = user.ProfileImage,
+                        IngameName = user.IngameName,
+                    })
+                    .ToListAsync();
+
+                return userViewModels;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error while getting all users");
+                return new List<UserViewModel>();
             }
-
-            return userViewModels;
         }
 
         public async Task<bool> UpdateUserDateOfBirthAsync(string userName, DateTime dateOfBirth)

@@ -18,7 +18,7 @@ namespace Spice.API.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<User>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Get()
+        public ActionResult Get()
         {
             try
             {
@@ -52,7 +52,7 @@ namespace Spice.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Details(Guid id)
+        public ActionResult Details(Guid id)
         {
             if (id.Equals(Guid.Empty)) { return BadRequest(); }
 
@@ -81,7 +81,7 @@ namespace Spice.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Details(string discordId)
+        public ActionResult Details(string discordId)
         {
             if (string.IsNullOrEmpty(discordId)) { return BadRequest(); }
 
